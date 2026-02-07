@@ -4,9 +4,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 
-// Mock translateWrapper to avoid ra-core context dependency
+// Mock useTranslateWrapper to avoid ra-core context dependency
 vi.mock("./translateWrapper", () => ({
-  translateWrapper: () => (key: string, _args?: any) => key,
+  useTranslateWrapper: () => (key: string, _args?: any) => key,
 }));
 
 // Mock shared dialog components to avoid Radix UI portal issues in jsdom
@@ -30,9 +30,7 @@ vi.mock("./components/SharedDialogButton", () => ({
 }));
 
 vi.mock("./components/SharedLoader", () => ({
-  SharedLoader: ({ loadingTxt }: any) => (
-    <div data-testid="loader">{loadingTxt}</div>
-  ),
+  SharedLoader: ({ loadingTxt }: any) => <div data-testid="loader">{loadingTxt}</div>,
 }));
 
 // Mock UI primitives for ImportButtonUI (avoid Radix tooltip portal)
@@ -118,9 +116,7 @@ describe("ImportCsvDialogStrategy", () => {
   });
 
   it("should disable Replace button when disableImportOverwrite is true", () => {
-    render(
-      <ImportCsvDialogStrategy {...baseProps()} disableImportOverwrite={true} />,
-    );
+    render(<ImportCsvDialogStrategy {...baseProps()} disableImportOverwrite={true} />);
     const buttons = screen.getAllByRole("button");
     expect(buttons[0]).toBeDisabled();
     expect(buttons[1]).not.toBeDisabled();
@@ -175,9 +171,7 @@ describe("ImportCsvDialogEachItem", () => {
   });
 
   it("should not render when openAskDecide is false", () => {
-    render(
-      <ImportCsvDialogEachItem {...baseProps()} openAskDecide={false} />,
-    );
+    render(<ImportCsvDialogEachItem {...baseProps()} openAskDecide={false} />);
     expect(screen.queryByTestId("dialog-wrapper")).not.toBeInTheDocument();
   });
 
@@ -214,21 +208,14 @@ describe("ImportCsvDialogEachItem", () => {
   });
 
   it("should disable Replace button when disableImportOverwrite is true", () => {
-    render(
-      <ImportCsvDialogEachItem
-        {...baseProps()}
-        disableImportOverwrite={true}
-      />,
-    );
+    render(<ImportCsvDialogEachItem {...baseProps()} disableImportOverwrite={true} />);
     const buttons = screen.getAllByRole("button");
     expect(buttons[0]).toBeDisabled();
     expect(buttons[1]).not.toBeDisabled();
   });
 
   it("should disable Add-as-new button when disableImportNew is true", () => {
-    render(
-      <ImportCsvDialogEachItem {...baseProps()} disableImportNew={true} />,
-    );
+    render(<ImportCsvDialogEachItem {...baseProps()} disableImportNew={true} />);
     const buttons = screen.getAllByRole("button");
     expect(buttons[0]).not.toBeDisabled();
     expect(buttons[1]).toBeDisabled();
@@ -286,9 +273,7 @@ describe("ImportButtonUI", () => {
   it("should call onFileAdded when a file is selected", () => {
     const props = baseProps();
     const { container } = render(<ImportButtonUI {...props} />);
-    const input = container.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
     fireEvent.change(input, {
       target: { files: [new File(["id,title"], "data.csv")] },
     });

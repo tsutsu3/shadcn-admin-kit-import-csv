@@ -8,16 +8,16 @@ export default {
     },
     parsing: {
       collidingIds: 'Es gibt Konflikte mit "id"-Feldern',
-      failedValidateRow: 'Das CSV hat die Überprüfung nicht bestanden.',
-      invalidCsv: 'Das Dokument konnte nicht als CSV gelesen werden.',
+      failedValidateRow: "Das CSV hat die Überprüfung nicht bestanden.",
+      invalidCsv: "Das Dokument konnte nicht als CSV gelesen werden.",
     },
     dialogCommon: {
       subtitle: 'Importiere %{count} elemente von %{fileName} nach "%{resource}"',
       conflictCount:
-      "Die Ressource <strong>%{resource}</strong> hat <strong>%{conflictingCount}</strong> weitere Einträge mit ID-Konflikten.",
+        "Die Ressource <strong>%{resource}</strong> hat <strong>%{conflictingCount}</strong> weitere Einträge mit ID-Konflikten.",
       buttons: {
         cancel: "Abbrechen",
-      }
+      },
     },
     dialogImport: {
       alertClose: "%{fname} importiert",

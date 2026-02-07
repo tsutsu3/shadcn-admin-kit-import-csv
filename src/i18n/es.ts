@@ -8,16 +8,16 @@ export default {
     },
     parsing: {
       collidingIds: 'Se encontraron campos de "id" en conflicto',
-      failedValidateRow: 'CSV no cumplió con los requisitos de validación',
+      failedValidateRow: "CSV no cumplió con los requisitos de validación",
       invalidCsv: 'El documento no se pudo analizar como un archivo "csv"',
     },
     dialogCommon: {
       subtitle: 'Importando %{count} elementos de %{fileName} a "%{resource}"',
       conflictCount:
-      "El recurso <strong> %{resource} </strong> tiene <strong> %{conflictingCount} </strong> más registros con ID en conflicto",
+        "El recurso <strong> %{resource} </strong> tiene <strong> %{conflictingCount} </strong> más registros con ID en conflicto",
       buttons: {
         cancel: "Cancelar",
-      }
+      },
     },
     dialogImport: {
       alertClose: "Importado %{fname}",

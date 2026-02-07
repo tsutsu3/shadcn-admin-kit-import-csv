@@ -8,7 +8,7 @@ export default {
     },
     parsing: {
       collidingIds: 'Conflicterende "id" velden gevonden',
-      failedValidateRow: 'CSV heeft niet aan de validatievereisten voldaan',
+      failedValidateRow: "CSV heeft niet aan de validatievereisten voldaan",
       invalidCsv: 'Het document kon niet geparsed worden als een "csv" bestand',
     },
     dialogCommon: {
@@ -17,7 +17,7 @@ export default {
         "De resource <strong>%{resource}</strong> heeft <strong>%{conflictingCount}</strong> conflicterende ids",
       buttons: {
         cancel: "Annuleren",
-      }
+      },
     },
     dialogImport: {
       alertClose: "%{fname} geïmporteerd",

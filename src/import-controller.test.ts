@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
-import { GetIdsColliding, GetIdsCollidingGetMany, GetCSVItems, CheckCSVValidation } from "./import-controller";
+import {
+  GetIdsColliding,
+  GetIdsCollidingGetMany,
+  GetCSVItems,
+  CheckCSVValidation,
+} from "./import-controller";
 import { DataProvider } from "ra-core";
 // Mock processCsvFile to avoid FileReader dependency (no jsdom in this file)
 vi.mock("./csv-extractor", () => ({
@@ -34,7 +39,11 @@ describe("GetIdsColliding", () => {
     const getMany = vi.fn().mockResolvedValue({ data: [{ id: 1 }, { id: 3 }] });
     const dp = makeMockDataProvider({ getMany });
 
-    const csvValues = [{ id: 1, title: "A" }, { id: 2, title: "B" }, { id: 3, title: "C" }];
+    const csvValues = [
+      { id: 1, title: "A" },
+      { id: 2, title: "B" },
+      { id: 3, title: "C" },
+    ];
     const result = await GetIdsColliding(false, translate, dp, csvValues, "posts", false);
 
     expect(getMany).toHaveBeenCalledWith("posts", { ids: [1, 2, 3] });
@@ -42,12 +51,16 @@ describe("GetIdsColliding", () => {
   });
 
   it("should use getOne fallback when disableGetMany is true", async () => {
-    const getOne = vi.fn()
+    const getOne = vi
+      .fn()
       .mockResolvedValueOnce({ data: { id: 1 } })
       .mockRejectedValueOnce(new Error("Not found"));
     const dp = makeMockDataProvider({ getOne });
 
-    const csvValues = [{ id: 1, title: "A" }, { id: 2, title: "B" }];
+    const csvValues = [
+      { id: 1, title: "A" },
+      { id: 2, title: "B" },
+    ];
     const result = await GetIdsColliding(false, translate, dp, csvValues, "posts", true);
 
     expect(getOne).toHaveBeenCalledTimes(2);
@@ -68,7 +81,8 @@ describe("GetIdsColliding", () => {
 describe("GetIdsCollidingGetMany", () => {
   it("should fall back to getOne when getMany throws", async () => {
     const getMany = vi.fn().mockRejectedValue(new Error("No item with identifier 5"));
-    const getOne = vi.fn()
+    const getOne = vi
+      .fn()
       .mockResolvedValueOnce({ data: { id: 1 } })
       .mockRejectedValueOnce(new Error("Not found"))
       .mockResolvedValueOnce({ data: { id: 3 } });
@@ -126,9 +140,9 @@ describe("GetCSVItems", () => {
     vi.mocked(processCsvFile).mockRejectedValue(new Error("Parse error"));
     const file = new File([""], "bad.csv", { type: "text/csv" });
 
-    await expect(
-      GetCSVItems(false, translate, file, {})
-    ).rejects.toBe("csv.parsing.invalidCsvDocument");
+    await expect(GetCSVItems(false, translate, file, {})).rejects.toBe(
+      "csv.parsing.invalidCsvDocument",
+    );
   });
 });
 
@@ -140,23 +154,23 @@ describe("CheckCSVValidation", () => {
   it("should pass when all rows are valid", async () => {
     const validateRow = vi.fn().mockResolvedValue(undefined);
     await expect(
-      CheckCSVValidation(false, translate, [{ id: 1 }, { id: 2 }], validateRow)
+      CheckCSVValidation(false, translate, [{ id: 1 }, { id: 2 }], validateRow),
     ).resolves.toBeUndefined();
     expect(validateRow).toHaveBeenCalledTimes(2);
   });
 
   it("should throw original Error message when validateRow rejects with Error", async () => {
     const validateRow = vi.fn().mockRejectedValue(new Error("Invalid row"));
-    await expect(
-      CheckCSVValidation(false, translate, [{ id: 1 }], validateRow)
-    ).rejects.toBe("Invalid row");
+    await expect(CheckCSVValidation(false, translate, [{ id: 1 }], validateRow)).rejects.toBe(
+      "Invalid row",
+    );
   });
 
   it("should throw translation key when validateRow rejects with non-Error", async () => {
     const validateRow = vi.fn().mockRejectedValue("some string");
-    await expect(
-      CheckCSVValidation(false, translate, [{ id: 1 }], validateRow)
-    ).rejects.toBe("csv.parsing.failedValidateRow");
+    await expect(CheckCSVValidation(false, translate, [{ id: 1 }], validateRow)).rejects.toBe(
+      "csv.parsing.failedValidateRow",
+    );
   });
 
   it("should reject with original message when CSV has wrong columns", async () => {
@@ -167,9 +181,9 @@ describe("CheckCSVValidation", () => {
       { id: "1", name: "Alice", email: "alice@test.com" },
       { id: "2", name: "Bob", email: "bob@test.com" },
     ];
-    await expect(
-      CheckCSVValidation(false, translate, wrongColumnData, validateRow)
-    ).rejects.toBe("'title' column is required");
+    await expect(CheckCSVValidation(false, translate, wrongColumnData, validateRow)).rejects.toBe(
+      "'title' column is required",
+    );
   });
 
   it("should pass when CSV rows have correct columns", async () => {
@@ -181,7 +195,7 @@ describe("CheckCSVValidation", () => {
       { id: "2", title: "World" },
     ];
     await expect(
-      CheckCSVValidation(false, translate, correctData, validateRow)
+      CheckCSVValidation(false, translate, correctData, validateRow),
     ).resolves.toBeUndefined();
   });
 });

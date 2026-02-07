@@ -37,7 +37,7 @@ function interpolate(template: string, args: Record<string, any>): string {
  * Falls back to built-in English translations when the system translator returns no result.
  * @returns A translate function that resolves keys to localized strings.
  */
-export const translateWrapper = (): UseTranslateFn => {
+export const useTranslateWrapper = (): UseTranslateFn => {
   const translateSystem = useTranslate();
   const translate = (key: string, args?: any): string => {
     const safeArgs = { ...args, _: "" };

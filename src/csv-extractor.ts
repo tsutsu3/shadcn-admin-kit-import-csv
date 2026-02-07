@@ -38,10 +38,7 @@ const setObjectValue = (object: any, path: PapaString, value: any): any => {
  * @param parseConfig - Optional PapaParse configuration overrides.
  * @returns An array of objects representing CSV rows, or undefined if file is falsy.
  */
-export async function processCsvFile(
-  file: File | any,
-  parseConfig: ParseConfig = {}
-) {
+export async function processCsvFile(file: File | any, parseConfig: ParseConfig = {}) {
   if (!file) {
     return;
   }
@@ -55,10 +52,7 @@ export async function processCsvFile(
  * @param inputConfig - Optional PapaParse configuration overrides.
  * @returns A 2D array of parsed cell values.
  */
-export async function getCsvData(
-  file: File | any,
-  inputConfig: ParseConfig = {}
-) {
+export async function getCsvData(file: File | any, inputConfig: ParseConfig = {}) {
   let config = {};
   const isObject = !!inputConfig && typeof inputConfig === "object";
   if (isObject) {
@@ -74,7 +68,7 @@ export async function getCsvData(
       // Callbacks
       complete: (result) => resolve(result.data as PapaString[][]),
       error: (error) => reject(error),
-    })
+    }),
   );
 }
 
@@ -86,7 +80,6 @@ export async function getCsvData(
  * @returns An array of row objects.
  */
 export function processCsvData(data: PapaString[][]): any[] {
-
   if (Array.isArray(data[0])) {
     const topRowKeys: PapaString[] = data[0];
 
@@ -100,13 +93,12 @@ export function processCsvData(data: PapaString[][]): any[] {
       return value;
     });
     return dataRows;
-  }
-  else {
+  } else {
     const dataRows: any[] = [];
-    data.forEach( (obj) => {
-        let value: any = {}
-        for (let key in obj) value = setObjectValue(value, key, obj[key]);
-        dataRows.push(value);
+    data.forEach((obj) => {
+      let value: any = {};
+      for (const key in obj) value = setObjectValue(value, key, obj[key]);
+      dataRows.push(value);
     });
     return dataRows;
   }

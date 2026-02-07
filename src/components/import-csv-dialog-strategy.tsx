@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { SharedDialogWrapper } from "./SharedDialogWrapper";
 import { SharedLoader } from "./SharedLoader";
 import { SharedDialogButton } from "./SharedDialogButton";
-import { translateWrapper } from "../translateWrapper";
+import { useTranslateWrapper } from "../translateWrapper";
 import { Check, Copy, Undo2 } from "lucide-react";
 
 interface ImportCsvDialogStrategyProps {
@@ -29,9 +29,7 @@ interface MessageState {
   messageHtml: string;
 }
 
-export const ImportCsvDialogStrategy = (
-  props: ImportCsvDialogStrategyProps,
-) => {
+export const ImportCsvDialogStrategy = (props: ImportCsvDialogStrategyProps) => {
   const {
     count,
     disableImportOverwrite,
@@ -46,7 +44,7 @@ export const ImportCsvDialogStrategy = (
     idsConflicting,
   } = props;
   const [messages, setMessages] = React.useState({} as MessageState);
-  const translate = translateWrapper();
+  const translate = useTranslateWrapper();
 
   useEffect(() => {
     setMessages({
@@ -60,15 +58,14 @@ export const ImportCsvDialogStrategy = (
       }),
       loadingTxt: translate("csv.loading"),
       labelSkip: translate("csv.dialogImport.buttons.skipAllConflicts"),
-      labelReplace: translate(
-        "csv.dialogImport.buttons.replaceAllConflicts",
-      ),
+      labelReplace: translate("csv.dialogImport.buttons.replaceAllConflicts"),
       labelDecide: translate("csv.dialogImport.buttons.letmeDecide"),
       messageHtml: translate("csv.dialogCommon.conflictCount", {
         resource: resourceName,
         conflictingCount: idsConflicting && idsConflicting.length,
       }),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, resourceName, fileName, idsConflicting]);
 
   return (

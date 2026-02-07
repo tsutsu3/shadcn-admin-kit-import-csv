@@ -1,7 +1,7 @@
 import { SharedDialogButton } from "./SharedDialogButton";
 import { SharedDialogWrapper } from "./SharedDialogWrapper";
 import { SharedLoader } from "./SharedLoader";
-import { translateWrapper } from "../translateWrapper";
+import { useTranslateWrapper } from "../translateWrapper";
 import { Check, Plus, Undo2, X } from "lucide-react";
 
 interface ImportCsvDialogEachItemProps {
@@ -21,9 +21,7 @@ interface ImportCsvDialogEachItemProps {
   idsConflicting: string[];
 }
 
-export const ImportCsvDialogEachItem = (
-  props: ImportCsvDialogEachItemProps,
-) => {
+export const ImportCsvDialogEachItem = (props: ImportCsvDialogEachItemProps) => {
   const {
     disableImportNew,
     disableImportOverwrite,
@@ -40,7 +38,7 @@ export const ImportCsvDialogEachItem = (
     isLoading,
     idsConflicting,
   } = props;
-  const translate = translateWrapper();
+  const translate = useTranslateWrapper();
 
   return (
     <SharedDialogWrapper

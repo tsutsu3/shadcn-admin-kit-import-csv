@@ -1,14 +1,7 @@
 // @vitest-environment jsdom
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  cleanup,
-  act,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, cleanup, act } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 
 // ─── Mocks ──────────────────────────────────────────────────────────
@@ -24,7 +17,7 @@ vi.mock("ra-core", () => ({
 }));
 
 vi.mock("./translateWrapper", () => ({
-  translateWrapper: () => (key: string, _args?: any) => key,
+  useTranslateWrapper: () => (key: string, _args?: any) => key,
 }));
 
 vi.mock("./import-controller", () => ({
@@ -59,9 +52,7 @@ vi.mock("./components/SharedDialogButton", () => ({
 }));
 
 vi.mock("./components/SharedLoader", () => ({
-  SharedLoader: ({ loadingTxt }: any) => (
-    <div data-testid="loader">{loadingTxt}</div>
-  ),
+  SharedLoader: ({ loadingTxt }: any) => <div data-testid="loader">{loadingTxt}</div>,
 }));
 
 vi.mock("./ui/tooltip", () => ({
@@ -81,11 +72,7 @@ vi.mock("./ui/button", () => ({
 // ─── Imports (after mocks) ──────────────────────────────────────────
 
 import { ImportButton } from "./main-csv-button";
-import {
-  GetCSVItems,
-  CheckCSVValidation,
-  GetIdsColliding,
-} from "./import-controller";
+import { GetCSVItems, CheckCSVValidation, GetIdsColliding } from "./import-controller";
 import { create, update } from "./uploader";
 
 // ─── Test helpers ───────────────────────────────────────────────────
@@ -93,9 +80,7 @@ import { create, update } from "./uploader";
 /** Renders ImportButton, selects a file, and waits for the strategy dialog. */
 async function openStrategyDialog() {
   const result = render(<ImportButton />);
-  const input = result.container.querySelector(
-    'input[type="file"]',
-  ) as HTMLInputElement;
+  const input = result.container.querySelector('input[type="file"]') as HTMLInputElement;
 
   await act(async () => {
     fireEvent.change(input, {
@@ -105,9 +90,7 @@ async function openStrategyDialog() {
 
   // Wait for async CSV processing → strategy dialog appears
   await waitFor(() => {
-    expect(
-      screen.getByText("csv.dialogImport.buttons.letmeDecide"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogImport.buttons.letmeDecide")).toBeInTheDocument();
   });
 
   return result;
@@ -120,9 +103,7 @@ async function clickLetMeDecide() {
     fireEvent.click(btn);
   });
   await waitFor(() => {
-    expect(
-      screen.getByText("csv.dialogDecide.buttons.replaceRow"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogDecide.buttons.replaceRow")).toBeInTheDocument();
   });
 }
 
@@ -151,33 +132,19 @@ describe("ImportButton - 'Let me decide' flow", () => {
     expect(createdValues).toEqual([{ id: "1", title: "New" }]);
 
     // Strategy dialog shows 3 buttons
-    expect(
-      screen.getByText("csv.dialogImport.buttons.replaceAllConflicts"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("csv.dialogImport.buttons.skipAllConflicts"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("csv.dialogImport.buttons.letmeDecide"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogImport.buttons.replaceAllConflicts")).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogImport.buttons.skipAllConflicts")).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogImport.buttons.letmeDecide")).toBeInTheDocument();
   });
 
   it("should switch to per-item dialog with 4 choices after 'Let me decide'", async () => {
     await openStrategyDialog();
     await clickLetMeDecide();
 
-    expect(
-      screen.getByText("csv.dialogDecide.buttons.replaceRow"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("csv.dialogDecide.buttons.addAsNewRow"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("csv.dialogDecide.buttons.skipDontReplace"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("csv.dialogCommon.buttons.cancel"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogDecide.buttons.replaceRow")).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogDecide.buttons.addAsNewRow")).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogDecide.buttons.skipDontReplace")).toBeInTheDocument();
+    expect(screen.getByText("csv.dialogCommon.buttons.cancel")).toBeInTheDocument();
   });
 
   it("should call update when 'Replace row' is clicked per-item", async () => {
@@ -213,9 +180,7 @@ describe("ImportButton - 'Let me decide' flow", () => {
 
     await clickLetMeDecide();
 
-    fireEvent.click(
-      screen.getByText("csv.dialogDecide.buttons.skipDontReplace"),
-    );
+    fireEvent.click(screen.getByText("csv.dialogDecide.buttons.skipDontReplace"));
 
     // Neither create nor update should be called for the skip
     await waitFor(() => {
@@ -244,9 +209,7 @@ describe("ImportButton - 'Let me decide' flow", () => {
     await clickLetMeDecide();
 
     // Skip first conflicting item (id=3, popped last from ["2","3"])
-    fireEvent.click(
-      screen.getByText("csv.dialogDecide.buttons.skipDontReplace"),
-    );
+    fireEvent.click(screen.getByText("csv.dialogDecide.buttons.skipDontReplace"));
 
     // Dialog stays open for second conflicting item (id=2)
     await waitFor(() => {
@@ -254,9 +217,7 @@ describe("ImportButton - 'Let me decide' flow", () => {
     });
 
     // Skip second conflicting item (id=2)
-    fireEvent.click(
-      screen.getByText("csv.dialogDecide.buttons.skipDontReplace"),
-    );
+    fireEvent.click(screen.getByText("csv.dialogDecide.buttons.skipDontReplace"));
 
     // No more conflicting items → dialog closes
     await waitFor(() => {
@@ -267,17 +228,11 @@ describe("ImportButton - 'Let me decide' flow", () => {
 
   it("should abort import and close dialog when validateRow rejects (column mismatch)", async () => {
     // CSV has wrong columns: name/email instead of title
-    vi.mocked(GetCSVItems).mockResolvedValue([
-      { id: "1", name: "Alice", email: "alice@test.com" },
-    ]);
-    vi.mocked(CheckCSVValidation).mockRejectedValueOnce(
-      "'title' column is required",
-    );
+    vi.mocked(GetCSVItems).mockResolvedValue([{ id: "1", name: "Alice", email: "alice@test.com" }]);
+    vi.mocked(CheckCSVValidation).mockRejectedValueOnce("'title' column is required");
 
     const result = render(<ImportButton />);
-    const input = result.container.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const input = result.container.querySelector('input[type="file"]') as HTMLInputElement;
 
     await act(async () => {
       fireEvent.change(input, {
@@ -296,10 +251,7 @@ describe("ImportButton - 'Let me decide' flow", () => {
     expect(create).not.toHaveBeenCalled();
     expect(update).not.toHaveBeenCalled();
     // Error notification should show the original validateRow message
-    expect(mockNotify).toHaveBeenCalledWith(
-      "'title' column is required",
-      { type: "error" },
-    );
+    expect(mockNotify).toHaveBeenCalledWith("'title' column is required", { type: "error" });
   });
 
   it("should replace first item then skip second item", async () => {
@@ -319,9 +271,7 @@ describe("ImportButton - 'Let me decide' flow", () => {
     });
 
     // Skip second conflicting item (id=2)
-    fireEvent.click(
-      screen.getByText("csv.dialogDecide.buttons.skipDontReplace"),
-    );
+    fireEvent.click(screen.getByText("csv.dialogDecide.buttons.skipDontReplace"));
 
     await waitFor(() => {
       expect(screen.queryByTestId("dialog")).not.toBeInTheDocument();

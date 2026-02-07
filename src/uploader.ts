@@ -22,23 +22,20 @@ export async function create(
   resource: string,
   values: any[],
   preCommitCallback?: PrecommitCallback,
-  postCommitCallback?: ErrorCallback
+  postCommitCallback?: ErrorCallback,
 ) {
-  const parsedValues = preCommitCallback
-    ? await preCommitCallback("create", values)
-    : values;
+  const parsedValues = preCommitCallback ? await preCommitCallback("create", values) : values;
   const reportItems = await createInDataProvider(
     logging,
     !!disableCreateMany,
     dataProvider,
     resource,
-    parsedValues
+    parsedValues,
   );
   if (postCommitCallback) {
     postCommitCallback(reportItems);
   }
-  const shouldReject =
-    !postCommitCallback && reportItems.some((r) => !r.success);
+  const shouldReject = !postCommitCallback && reportItems.some((r) => !r.success);
   if (shouldReject) {
     return Promise.reject(reportItems.map((r) => r.response));
   }
@@ -62,23 +59,20 @@ export async function update(
   resource: string,
   values: any[],
   preCommitCallback?: PrecommitCallback,
-  postCommitCallback?: ErrorCallback
+  postCommitCallback?: ErrorCallback,
 ) {
-  const parsedValues = preCommitCallback
-    ? await preCommitCallback("overwrite", values)
-    : values;
+  const parsedValues = preCommitCallback ? await preCommitCallback("overwrite", values) : values;
   const reportItems = await updateInDataProvider(
     logging,
     !!disableUpdateMany,
     dataProvider,
     resource,
-    parsedValues
+    parsedValues,
   );
   if (postCommitCallback) {
     postCommitCallback(reportItems);
   }
-  const shouldReject =
-    !postCommitCallback && reportItems.some((r) => !r.success);
+  const shouldReject = !postCommitCallback && reportItems.some((r) => !r.success);
   if (shouldReject) {
     return Promise.reject(reportItems.map((r) => r.response));
   }
@@ -107,7 +101,7 @@ export async function createInDataProvider(
   disableCreateMany: boolean,
   dataProvider: DataProvider,
   resource: string,
-  values: any[]
+  values: any[],
 ): Promise<ReportItem[]> {
   logger.setEnabled(logging);
   logger.log("createInDataProvider", { dataProvider, resource, values });
@@ -120,24 +114,26 @@ export async function createInDataProvider(
   try {
     const response = await (dataProvider as any).createMany(resource, { data: values });
     reportItems.push({
-      value: null, success: true, response: response
-    })
+      value: null,
+      success: true,
+      response: response,
+    });
   } catch (error) {
-    const providerMethodNotFoundErrors = [
-      "Unknown dataProvider",
-      "createMany",
-    ];
+    const providerMethodNotFoundErrors = ["Unknown dataProvider", "createMany"];
     const shouldTryFallback = doesErrorContainString(error, providerMethodNotFoundErrors);
     const apiError = !shouldTryFallback;
     if (apiError) {
       reportItems.push({
-        value: null, err: error, success: false, response: null
-      })
+        value: null,
+        err: error,
+        success: false,
+        response: null,
+      });
     }
     if (shouldTryFallback) {
       logger.log(
         "createInDataProvider",
-        "createMany not found on data provider (you may need to implement it see: https://github.com/benwinding/react-admin-import-csv#reducing-requests): using fallback instead"
+        "createMany not found on data provider (you may need to implement it see: https://github.com/benwinding/react-admin-import-csv#reducing-requests): using fallback instead",
       );
       try {
         const items = await createInDataProviderFallback(dataProvider, resource, values);
@@ -154,18 +150,16 @@ export async function createInDataProvider(
 async function createInDataProviderFallback(
   dataProvider: DataProvider,
   resource: string,
-  values: any[]
+  values: any[],
 ): Promise<ReportItem[]> {
   const reportItems: ReportItem[] = [];
   await Promise.all(
     values.map((value) =>
       dataProvider
         .create(resource, { data: value })
-        .then((res) =>
-          reportItems.push({ value: value, success: true, response: res })
-        )
-        .catch((err) => reportItems.push({ value, success: false, err: err }))
-    )
+        .then((res) => reportItems.push({ value: value, success: true, response: res }))
+        .catch((err) => reportItems.push({ value, success: false, err: err })),
+    ),
   );
   return reportItems;
 }
@@ -179,7 +173,7 @@ async function updateInDataProvider(
   disableUpdateMany: boolean,
   dataProvider: DataProvider,
   resource: string,
-  values: any[]
+  values: any[],
 ) {
   const ids = values.map((v) => v.id);
   logger.setEnabled(logging);
@@ -196,26 +190,31 @@ async function updateInDataProvider(
   }
   const reportItems: ReportItem[] = [];
   try {
-    const response = await (dataProvider as any).updateManyArray(resource, { ids: ids, data: values });
+    const response = await (dataProvider as any).updateManyArray(resource, {
+      ids: ids,
+      data: values,
+    });
     reportItems.push({
-      value: null, success: true, response: response
-    })
+      value: null,
+      success: true,
+      response: response,
+    });
   } catch (error) {
-    const providerMethodNotFoundErrors = [
-      "Unknown dataProvider",
-      "updateMany",
-    ];
+    const providerMethodNotFoundErrors = ["Unknown dataProvider", "updateMany"];
     const shouldTryFallback = doesErrorContainString(error, providerMethodNotFoundErrors);
     const apiError = !shouldTryFallback;
     if (apiError) {
       reportItems.push({
-        value: null, err: error, success: false, response: null
-      })
+        value: null,
+        err: error,
+        success: false,
+        response: null,
+      });
     }
     if (shouldTryFallback) {
       logger.log(
         "updateInDataProvider",
-        "updateManyArray not found on data provider (you may need to implement it see: https://github.com/benwinding/react-admin-import-csv#reducing-requests): using fallback instead"
+        "updateManyArray not found on data provider (you may need to implement it see: https://github.com/benwinding/react-admin-import-csv#reducing-requests): using fallback instead",
       );
       try {
         const items = await updateInDataProviderFallback(dataProvider, resource, values);
@@ -232,25 +231,25 @@ async function updateInDataProvider(
 async function updateInDataProviderFallback(
   dataProvider: DataProvider,
   resource: string,
-  values: any[]
+  values: any[],
 ): Promise<ReportItem[]> {
   const reportItems: ReportItem[] = [];
   await Promise.all(
     values.map((value) =>
       dataProvider
         .update(resource, { id: value.id, data: value, previousData: null as any })
-        .then((res) =>
-          reportItems.push({ value: value, success: true, response: res })
-        )
-        .catch((err) => reportItems.push({ value: value, success: false, err }))
-    )
+        .then((res) => reportItems.push({ value: value, success: true, response: res }))
+        .catch((err) => reportItems.push({ value: value, success: false, err })),
+    ),
   );
   return reportItems;
 }
 
 /** Checks whether an error's string representation contains any of the given substrings. */
 function doesErrorContainString(error: any, stringsToCheck: string[]): boolean {
-  const errorString = (!!error && typeof error === 'object' && error?.toString()) || '';
-  const shouldTryFallback = stringsToCheck.some(stringToCheck => errorString.includes(stringToCheck));
+  const errorString = (!!error && typeof error === "object" && error?.toString()) || "";
+  const shouldTryFallback = stringsToCheck.some((stringToCheck) =>
+    errorString.includes(stringToCheck),
+  );
   return shouldTryFallback;
 }

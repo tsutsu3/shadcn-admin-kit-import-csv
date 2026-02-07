@@ -3,21 +3,20 @@ export default {
     buttonMain: {
       label: "Импорт",
       tooltip: "Должен быть '.csv' or '.tsv' file",
-      emptyResource:
-        "Свойство 'resource' пустое. Вы передали {...props} в ImportButton?",
+      emptyResource: "Свойство 'resource' пустое. Вы передали {...props} в ImportButton?",
     },
     parsing: {
       collidingIds: 'Обнаружен конфликт полей "id"',
-      failedValidateRow: 'CSV не прошёл проверку требований',
+      failedValidateRow: "CSV не прошёл проверку требований",
       invalidCsv: 'Документ не может быть проанализирован как "csv" файл',
     },
     dialogCommon: {
       subtitle: 'Импорт %{count} элементов из %{fileName} в "%{resource}"',
       conflictCount:
-      "Ресурс <strong>%{resource}</strong> содержит <strong>%{conflictingCount}</strong> и больше записей с конфликтующими id",
+        "Ресурс <strong>%{resource}</strong> содержит <strong>%{conflictingCount}</strong> и больше записей с конфликтующими id",
       buttons: {
         cancel: "Отмена",
-      }
+      },
     },
     dialogImport: {
       alertClose: "Импортировано %{fname}",

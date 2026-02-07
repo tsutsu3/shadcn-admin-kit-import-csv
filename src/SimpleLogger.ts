@@ -23,10 +23,7 @@ export class SimpleLogger {
     if (!this.debug) {
       return (..._any: any[]) => {};
     }
-    const boundLogFn: (...args: any[]) => void = console.log.bind(
-      console,
-      this.getLogString(),
-    );
+    const boundLogFn: (...args: any[]) => void = console.log.bind(console, this.getLogString());
     return boundLogFn;
   }
 
@@ -35,10 +32,7 @@ export class SimpleLogger {
     if (!this.debug) {
       return (..._any: any[]) => {};
     }
-    const boundLogFn: (...args: any[]) => void = console.warn.bind(
-      console,
-      this.getLogString(),
-    );
+    const boundLogFn: (...args: any[]) => void = console.warn.bind(console, this.getLogString());
     return boundLogFn;
   }
 
@@ -47,10 +41,7 @@ export class SimpleLogger {
     if (!this.debug) {
       return (..._any: any[]) => {};
     }
-    const boundLogFn: (...args: any[]) => void = console.error.bind(
-      console,
-      this.getLogString(),
-    );
+    const boundLogFn: (...args: any[]) => void = console.error.bind(console, this.getLogString());
     return boundLogFn;
   }
 

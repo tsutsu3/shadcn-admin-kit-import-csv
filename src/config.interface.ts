@@ -8,11 +8,11 @@ export interface ImportConfig {
   // Enable logging
   logging?: boolean;
   // Disable the attempt to use "createMany", will instead just use "create" calls
-  disableCreateMany?: boolean,
+  disableCreateMany?: boolean;
   // Disable the attempt to use "updateMany", will instead just use "update" calls
-  disableUpdateMany?: boolean,
+  disableUpdateMany?: boolean;
   // Disable the attempt to use "getMany", will instead just use "getOne" calls
-  disableGetMany?: boolean,
+  disableGetMany?: boolean;
   // Disable "import new" button
   disableImportNew?: boolean;
   // Disable "import overwrite" button
@@ -26,8 +26,8 @@ export interface ImportConfig {
   // Async function to Validate a row, reject the promise if it's not valid
   validateRow?: ValidateRowFunction;
   // Any option from the "papaparse" library, for all options see: https://www.papaparse.com/docs#config
-  parseConfig?: ParseConfig,
-};
+  parseConfig?: ParseConfig;
+}
 
 /** Callback invoked before committing data, allowing transformation of values based on the action type. */
 export type PrecommitCallback = (action: "create" | "overwrite", values: any[]) => Promise<any[]>;

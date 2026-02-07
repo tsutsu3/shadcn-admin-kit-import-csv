@@ -23,9 +23,7 @@ describe("processCsvData", () => {
     ];
 
     const result = processCsvData(data);
-    expect(result).toEqual([
-      { id: "1", address: { city: "Tokyo", zip: "100-0001" } },
-    ]);
+    expect(result).toEqual([{ id: "1", address: { city: "Tokyo", zip: "100-0001" } }]);
   });
 
   it("should handle empty data (header only)", () => {
@@ -60,13 +58,9 @@ describe("processCsvData", () => {
   });
 
   it("should handle nested dot-notation in object format", () => {
-    const data: any[] = [
-      { id: "1", "meta.author": "Alice", "meta.date": "2025-01-01" },
-    ];
+    const data: any[] = [{ id: "1", "meta.author": "Alice", "meta.date": "2025-01-01" }];
 
     const result = processCsvData(data);
-    expect(result).toEqual([
-      { id: "1", meta: { author: "Alice", date: "2025-01-01" } },
-    ]);
+    expect(result).toEqual([{ id: "1", meta: { author: "Alice", date: "2025-01-01" } }]);
   });
 });

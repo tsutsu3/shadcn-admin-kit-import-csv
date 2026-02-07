@@ -32,7 +32,9 @@ describe("createInDataProvider", () => {
   });
 
   it("should fallback to create when createMany throws 'Unknown dataProvider'", async () => {
-    const createMany = vi.fn().mockRejectedValue(new Error("Unknown dataProvider function: createMany"));
+    const createMany = vi
+      .fn()
+      .mockRejectedValue(new Error("Unknown dataProvider function: createMany"));
     const createFn = vi.fn().mockResolvedValue({ data: { id: 1 } });
     const dp = makeMockDataProvider({ create: createFn });
     (dp as any).createMany = createMany;
@@ -57,7 +59,8 @@ describe("createInDataProvider", () => {
   });
 
   it("should report failures for individual creates", async () => {
-    const createFn = vi.fn()
+    const createFn = vi
+      .fn()
       .mockResolvedValueOnce({ data: { id: 1 } })
       .mockRejectedValueOnce(new Error("Server error"));
     const dp = makeMockDataProvider({ create: createFn });
@@ -100,9 +103,7 @@ describe("create (high-level)", () => {
     const createFn = vi.fn().mockRejectedValue(new Error("fail"));
     const dp = makeMockDataProvider({ create: createFn });
 
-    await expect(
-      create(false, true, dp, "posts", [{ title: "A" }])
-    ).rejects.toBeDefined();
+    await expect(create(false, true, dp, "posts", [{ title: "A" }])).rejects.toBeDefined();
   });
 
   it("should not reject when create fails but postCommitCallback is set", async () => {
@@ -159,9 +160,7 @@ describe("update (high-level)", () => {
     const updateFn = vi.fn().mockRejectedValue(new Error("fail"));
     const dp = makeMockDataProvider({ update: updateFn });
 
-    await expect(
-      update(false, true, dp, "posts", [{ id: 1, title: "A" }])
-    ).rejects.toBeDefined();
+    await expect(update(false, true, dp, "posts", [{ id: 1, title: "A" }])).rejects.toBeDefined();
   });
 
   it("should not reject when update fails but postCommitCallback is set", async () => {
