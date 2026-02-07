@@ -1,12 +1,16 @@
-name: CI
+name: Publish to npm
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Dry run (do not actually publish)"
+        required: true
+        default: true
+        type: boolean
 
 jobs:
   test:
@@ -36,17 +40,13 @@ jobs:
 
       - run: pnpm build
 
-  deploy-demo:
-    name: Deploy demo to GitHub Pages
+  publish:
+    name: Publish to npm (Trusted Publishers)
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
-      pages: write
+      contents: read
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -58,28 +58,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          registry-url: https://registry.npmjs.org
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm build
 
-      - name: Install demo dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: demo
+      - name: Publish (dry-run)
+        if: github.event_name == 'workflow_dispatch' && inputs.dry-run == true
+        run: npm publish --access public --dry-run
 
-      - name: Build demo
-        run: pnpm build
-        working-directory: demo
-        env:
-          GITHUB_PAGES: true
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: demo/dist
-
-      - id: deployment
-        uses: actions/deploy-pages@v4
-
+      - name: Publish
+        if: github.event_name != 'workflow_dispatch' || inputs.dry-run == false
+        run: npm publish --access public --provenance
