@@ -3,18 +3,15 @@ export default {
     buttonMain: {
       label: "インポート",
       tooltip: "'.csv' または '.tsv' ファイルを選択してください",
-      emptyResource:
-        "'resource' プロパティが空です。ImportButton に {...props} を渡していますか？",
+      emptyResource: "'resource' プロパティが空です。ImportButton に {...props} を渡していますか？",
     },
     parsing: {
       collidingIds: "重複する ID フィールドが見つかりました",
       failedValidateRow: "CSV がバリデーション要件を満たしていません",
-      invalidCsvDocument:
-        "このドキュメントは CSV ファイルとして解析できませんでした",
+      invalidCsvDocument: "このドキュメントは CSV ファイルとして解析できませんでした",
     },
     dialogCommon: {
-      subtitle:
-        '%{fileName} から "%{resource}" へ %{count} 件のデータをインポート',
+      subtitle: '%{fileName} から "%{resource}" へ %{count} 件のデータをインポート',
       conflictCount:
         "リソース <strong>%{resource}</strong> には <strong>%{conflictingCount}</strong> 件の ID が重複するレコードがあります",
       buttons: {

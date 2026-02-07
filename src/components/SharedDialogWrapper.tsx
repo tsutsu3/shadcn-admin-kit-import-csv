@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 
 export function SharedDialogWrapper(props: {
   open: boolean;
@@ -15,10 +9,7 @@ export function SharedDialogWrapper(props: {
   children?: React.ReactNode;
 }) {
   return (
-    <Dialog
-      open={props.open}
-      onOpenChange={(open) => !open && props.handleClose()}
-    >
+    <Dialog open={props.open} onOpenChange={(open) => !open && props.handleClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{props.title}</DialogTitle>

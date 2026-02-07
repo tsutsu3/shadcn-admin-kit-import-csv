@@ -1,20 +1,11 @@
 import React from "react";
-import {
-  useRefresh,
-  useNotify,
-  useDataProvider,
-  useResourceContext,
-} from "ra-core";
+import { useRefresh, useNotify, useDataProvider, useResourceContext } from "ra-core";
 
 import { ImportConfig } from "./config.interface";
 import { SimpleLogger } from "./SimpleLogger";
-import {
-  CheckCSVValidation,
-  GetCSVItems,
-  GetIdsColliding,
-} from "./import-controller";
+import { CheckCSVValidation, GetCSVItems, GetIdsColliding } from "./import-controller";
 import { create, update } from "./uploader";
-import { translateWrapper } from "./translateWrapper";
+import { useTranslateWrapper } from "./translateWrapper";
 import { ImportCsvDialogStrategy } from "./components/import-csv-dialog-strategy";
 import { ImportCsvDialogEachItem } from "./components/import-csv-dialog-each-item";
 import { ImportButtonUI } from "./components/import-button";
@@ -26,7 +17,7 @@ export const ImportButton = (
   },
 ) => {
   const refresh = useRefresh();
-  const translate = translateWrapper();
+  const translate = useTranslateWrapper();
   const dataProvider = useDataProvider();
   const resource = useResourceContext();
 
@@ -62,6 +53,8 @@ export const ImportButton = (
     resourceName = resource;
   }
 
+  const notify = useNotify();
+
   const [open, setOpen] = React.useState(false);
   const [openAskDecide, setOpenAskDecide] = React.useState(false);
   const [values, setValues] = React.useState([] as any[]);
@@ -84,16 +77,9 @@ export const ImportButton = (
         throw new Error("File not processed from input field");
       }
       logger.log("Parsing CSV file");
-      const csvRows = await GetCSVItems(
-        logging,
-        translate,
-        file,
-        parseConfig,
-      );
-      const csvItems = transformRows
-        ? await transformRows(csvRows)
-        : csvRows;
-      mounted && setValues(csvItems);
+      const csvRows = await GetCSVItems(logging, translate, file, parseConfig);
+      const csvItems = transformRows ? await transformRows(csvRows) : csvRows;
+      if (mounted) setValues(csvItems);
       logger.log("Validating CSV file");
       await CheckCSVValidation(logging, translate, csvItems, validateRow);
       logger.log("Checking rows to import");
@@ -105,23 +91,17 @@ export const ImportButton = (
         resourceName!,
         disableGetMany,
       );
-      mounted && setIdsConflicting(collidingIds);
+      if (mounted) setIdsConflicting(collidingIds);
       const hasCollidingIds = !!collidingIds.length;
       logger.log("Has colliding ids?", { hasCollidingIds, collidingIds });
       if (!hasCollidingIds) {
         return [csvItems, hasCollidingIds];
       }
-      const collidingIdsStringsSet = new Set(
-        collidingIds.map((id) => id + ""),
-      );
+      const collidingIdsStringsSet = new Set(collidingIds.map((id) => id + ""));
       const collidingIdsNumbersSet = new Set<number>();
 
-      const collidingIdsAsNumbers = collidingIds.map((id) =>
-        parseFloat(id + ""),
-      );
-      const allCollidingIdsAreNumbers = collidingIdsAsNumbers.every((id) =>
-        isFinite(id),
-      );
+      const collidingIdsAsNumbers = collidingIds.map((id) => parseFloat(id + ""));
+      const allCollidingIdsAreNumbers = collidingIdsAsNumbers.every((id) => isFinite(id));
       if (allCollidingIdsAreNumbers) {
         collidingIdsAsNumbers.map((id) => collidingIdsNumbersSet.add(id));
       }
@@ -140,16 +120,20 @@ export const ImportButton = (
     processCSV()
       .then(async ([csvItems, hasCollidingIds]) => {
         await createRows(csvItems);
-        mounted && !hasCollidingIds && handleClose();
+        if (mounted && !hasCollidingIds) handleClose();
       })
       .catch((error) => {
-        mounted && resetVars();
+        if (mounted) resetVars();
+        notify(typeof error === "string" ? error : error?.message || String(error), {
+          type: "error",
+        });
         logger.error(error);
       });
 
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
   let refInput: HTMLInputElement;
@@ -198,14 +182,10 @@ export const ImportButton = (
     setFile(file);
   };
 
-  const notify = useNotify();
   const handleClose = () => {
     logger.log("handleClose", { file });
     resetVars();
-    notify(
-      translate("csv.dialogImport.alertClose", { fname: fileName }),
-      { type: "info" },
-    );
+    notify(translate("csv.dialogImport.alertClose", { fname: fileName }), { type: "info" });
     refresh();
   };
 
@@ -215,9 +195,7 @@ export const ImportButton = (
       setIsLoading(true);
       await new Promise((res) => setTimeout(res, 1000));
       const collidingIdsSet = new Set(idsConflicting.map((id: any) => id));
-      const valuesColliding = values.filter((item) =>
-        collidingIdsSet.has(item.id),
-      );
+      const valuesColliding = values.filter((item) => collidingIdsSet.has(item.id));
       await updateRows(valuesColliding);
       handleClose();
     } catch (error) {
@@ -239,12 +217,9 @@ export const ImportButton = (
   };
 
   const nextConflicting = () => {
-    const currentId =
-      Array.isArray(idsConflicting) && idsConflicting.pop();
+    const currentId = Array.isArray(idsConflicting) && idsConflicting.pop();
     setIdsConflicting(idsConflicting);
-    const foundValue =
-      Array.isArray(values) &&
-      values.filter((v) => v.id === currentId).pop();
+    const foundValue = Array.isArray(values) && values.filter((v) => v.id === currentId).pop();
     logger.log("nextConflicting", { foundValue, currentId });
     const isLast = !foundValue;
     if (!isLast) {

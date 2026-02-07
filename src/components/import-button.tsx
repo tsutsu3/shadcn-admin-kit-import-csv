@@ -1,12 +1,8 @@
 import React from "react";
 import { Upload } from "lucide-react";
 import { Button } from "../ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { translateWrapper } from "../translateWrapper";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useTranslateWrapper } from "../translateWrapper";
 
 interface ImportButtonUIProps {
   label: string;
@@ -17,7 +13,7 @@ interface ImportButtonUIProps {
 
 export function ImportButtonUI(props: ImportButtonUIProps) {
   const { label, clickImportButton, onFileAdded, onRef } = props;
-  const translate = translateWrapper();
+  const translate = useTranslateWrapper();
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -29,13 +25,7 @@ export function ImportButtonUI(props: ImportButtonUIProps) {
       <TooltipContent>
         <p>{translate("csv.buttonMain.tooltip")}</p>
       </TooltipContent>
-      <input
-        ref={onRef}
-        type="file"
-        className="hidden"
-        onChange={onFileAdded}
-        accept=".csv,.tsv"
-      />
+      <input ref={onRef} type="file" className="hidden" onChange={onFileAdded} accept=".csv,.tsv" />
     </Tooltip>
   );
 }
