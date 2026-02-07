@@ -7,11 +7,14 @@ CSV/TSV import button for [react-admin](https://github.com/marmelab/react-admin)
 
 A fork of [react-admin-import-csv](https://github.com/benwinding/react-admin-import-csv) with Material UI replaced by [shadcn/ui](https://ui.shadcn.com/) components (Radix UI + Tailwind CSS).
 
+![List view with Import buttons](docs/assets/home.png)
+
 ## Features
 
 - Import CSV/TSV files into any react-admin resource
 - Collision detection — skip, replace, or decide per row
-- Bulk operations via `createMany` / `updateManyArray` with fallback
+- Row validation with error toast notifications
+- Bulk operations via `createMany` / `updateManyArray` with automatic fallback
 - Built-in i18n (en, ja, de, es, fr, zh, ru, nl, pl, ptBR)
 - shadcn/ui Dialog, Button, Tooltip components
 - Tailwind CSS styling — no Material UI dependency
@@ -26,8 +29,6 @@ pnpm add shadcn-admin-kit-import-csv
 
 ### Peer Dependencies
 
-This package requires the following peer dependencies:
-
 ```bash
 npm install react react-dom ra-core papaparse lucide-react \
   @radix-ui/react-dialog @radix-ui/react-tooltip @radix-ui/react-slot \
@@ -39,7 +40,7 @@ npm install react react-dom ra-core papaparse lucide-react \
 ### Basic
 
 ```tsx
-import { Datagrid, List, TextField, TopToolbar, CreateButton, ExportButton } from "react-admin";
+import { List, Datagrid, TextField, TopToolbar, CreateButton, ExportButton } from "react-admin";
 import { ImportButton } from "shadcn-admin-kit-import-csv";
 
 const ListActions = () => (
@@ -60,7 +61,28 @@ export const PostList = () => (
 );
 ```
 
-### With Configuration
+### With Validation
+
+You can validate each CSV row before import. If validation fails, a toast notification displays the error message and the import is aborted.
+
+```tsx
+import { ImportButton } from "shadcn-admin-kit-import-csv";
+
+const validateRow = async (row: any) => {
+  if (row.title == null || row.title === "") {
+    throw new Error("CSV must contain a 'title' column");
+  }
+};
+
+const ListActions = () => (
+  <TopToolbar>
+    <ImportButton />
+    <ImportButton label="Import (validated)" validateRow={validateRow} />
+  </TopToolbar>
+);
+```
+
+### With Full Configuration
 
 ```tsx
 import { ImportButton, ImportConfig } from "shadcn-admin-kit-import-csv";
@@ -87,34 +109,60 @@ const ListActions = () => (
 );
 ```
 
+## Import Flow
+
+### 1. Select a CSV file
+
+Click the **Import** button and select a `.csv` or `.tsv` file.
+
+### 2. Collision handling
+
+When imported rows have IDs that already exist, a strategy dialog appears:
+
+![Strategy dialog — Replace, Skip, or Let me decide](docs/assets/import.png)
+
+| Option | Behavior |
+| --- | --- |
+| **Replace the rows** | Overwrite all conflicting records |
+| **Skip these rows** | Import only non-conflicting records |
+| **Let me decide for each row** | Review each conflict individually |
+
+### 3. Per-row decisions
+
+If you choose **"Let me decide for each row"**, a per-item dialog lets you handle each conflict:
+
+![Per-item dialog — Replace, Add as new, Skip, or Cancel](docs/assets/letme.png)
+
+| Option | Behavior |
+| --- | --- |
+| **Replace the row id=N** | Overwrite the existing record |
+| **Add as new row** | Create a new record (without the conflicting ID) |
+| **Skip this row** | Leave the existing record unchanged |
+| **Cancel** | Abort remaining conflict resolution |
+
+### 4. Import complete
+
+After import, a toast notification confirms the result and the list refreshes automatically.
+
+![Import complete with toast notification](docs/assets/imported.png)
+
 ## Configuration Options
 
-```typescript
-interface ImportConfig {
-  // Enable logging
-  logging?: boolean;
-  // Disable "createMany" (uses "create" per item instead)
-  disableCreateMany?: boolean;
-  // Disable "updateMany" (uses "update" per item instead)
-  disableUpdateMany?: boolean;
-  // Disable "getMany" (uses "getOne" per item instead)
-  disableGetMany?: boolean;
-  // Disable "import new" button
-  disableImportNew?: boolean;
-  // Disable "import overwrite" button
-  disableImportOverwrite?: boolean;
-  // Transform values before create/update
-  preCommitCallback?: (action: "create" | "overwrite", values: any[]) => Promise<any[]>;
-  // Handle errors after import
-  postCommitCallback?: (error: any) => void;
-  // Transform CSV rows before processing
-  transformRows?: (csvRows: any[]) => Promise<any[]>;
-  // Validate each row (reject promise to fail)
-  validateRow?: (csvRowItem: any, index?: any, allItems?: any[]) => Promise<void>;
-  // papaparse config: https://www.papaparse.com/docs#config
-  parseConfig?: ParseConfig;
-}
-```
+| Option | Type | Description |
+| --- | --- | --- |
+| `logging` | `boolean` | Enable debug logging |
+| `label` | `string` | Custom button label |
+| `resourceName` | `string` | Override the target resource name |
+| `parseConfig` | `ParseConfig` | [PapaParse config](https://www.papaparse.com/docs#config) |
+| `validateRow` | `(row, index?, allItems?) => Promise<void>` | Validate each row; throw to reject |
+| `transformRows` | `(csvRows) => Promise<any[]>` | Transform CSV rows before processing |
+| `preCommitCallback` | `(action, values) => Promise<any[]>` | Transform values before create/update |
+| `postCommitCallback` | `(reportItems) => void` | Handle results after import |
+| `disableCreateMany` | `boolean` | Force individual `create` calls |
+| `disableUpdateMany` | `boolean` | Force individual `update` calls |
+| `disableGetMany` | `boolean` | Force individual `getOne` calls |
+| `disableImportNew` | `boolean` | Disable "Add as new" button |
+| `disableImportOverwrite` | `boolean` | Disable "Replace" button |
 
 ## Bulk Operations
 
@@ -139,7 +187,7 @@ interface UpdateManyArrayParams {
 
 ## i18n
 
-This package includes built-in translations and falls back to English if no translation is found. To use translations with react-admin's i18n system:
+Built-in translations with automatic English fallback. To integrate with react-admin's i18n system:
 
 ```tsx
 import { i18n } from "shadcn-admin-kit-import-csv";
@@ -158,14 +206,26 @@ Supported languages: English (en), Japanese (ja), German (de), Spanish (es), Fre
 # Install dependencies
 pnpm install
 
+# Run tests (72 tests)
+pnpm test
+
 # Type check
 pnpm typecheck
 
-# Run tests
-pnpm test
-
 # Build
 pnpm build
+
+# Lint & format
+pnpm lint
+pnpm format:check
+```
+
+### Demo
+
+```bash
+cd demo
+pnpm install
+pnpm dev
 ```
 
 ## Credits
