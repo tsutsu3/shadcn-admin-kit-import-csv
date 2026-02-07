@@ -1,7 +1,6 @@
 # shadcn-admin-kit-import-csv
 
 [![NPM Version](https://img.shields.io/npm/v/shadcn-admin-kit-import-csv.svg)](https://www.npmjs.com/package/shadcn-admin-kit-import-csv)
-[![License](https://img.shields.io/npm/l/shadcn-admin-kit-import-csv.svg)](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/blob/main/LICENSE)
 
 CSV/TSV import button for [react-admin](https://github.com/marmelab/react-admin) using **shadcn/ui** + **Tailwind CSS**.
 
