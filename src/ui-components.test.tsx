@@ -97,7 +97,7 @@ describe("ImportCsvDialogStrategy", () => {
     const props = baseProps();
     render(<ImportCsvDialogStrategy {...props} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[0]); // Replace button
     expect(props.handleReplace).toHaveBeenCalledTimes(1);
   });
 
@@ -105,7 +105,7 @@ describe("ImportCsvDialogStrategy", () => {
     const props = baseProps();
     render(<ImportCsvDialogStrategy {...props} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[1]);
+    fireEvent.click(buttons[1]); // Skip button
     expect(props.handleSkip).toHaveBeenCalledTimes(1);
   });
 
@@ -113,7 +113,7 @@ describe("ImportCsvDialogStrategy", () => {
     const props = baseProps();
     render(<ImportCsvDialogStrategy {...props} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[2]);
+    fireEvent.click(buttons[2]); // Let me decide button
     expect(props.handleAskDecide).toHaveBeenCalledTimes(1);
   });
 
@@ -185,7 +185,7 @@ describe("ImportCsvDialogEachItem", () => {
     const props = baseProps();
     render(<ImportCsvDialogEachItem {...props} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[0]); // Replace button
     expect(props.handleAskDecideReplace).toHaveBeenCalledTimes(1);
   });
 
@@ -193,7 +193,7 @@ describe("ImportCsvDialogEachItem", () => {
     const props = baseProps();
     render(<ImportCsvDialogEachItem {...props} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[1]);
+    fireEvent.click(buttons[1]); // Add-as-new button
     expect(props.handleAskDecideAddAsNew).toHaveBeenCalledTimes(1);
   });
 
@@ -201,7 +201,7 @@ describe("ImportCsvDialogEachItem", () => {
     const props = baseProps();
     render(<ImportCsvDialogEachItem {...props} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[2]);
+    fireEvent.click(buttons[2]); // Skip button
     expect(props.handleAskDecideSkip).toHaveBeenCalledTimes(1);
   });
 
@@ -209,7 +209,7 @@ describe("ImportCsvDialogEachItem", () => {
     const props = baseProps();
     render(<ImportCsvDialogEachItem {...props} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[3]);
+    fireEvent.click(buttons[3]); // Cancel button
     expect(props.handleAskDecideSkipAll).toHaveBeenCalledTimes(1);
   });
 
