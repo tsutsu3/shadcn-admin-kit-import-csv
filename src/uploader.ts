@@ -4,6 +4,17 @@ import { DataProvider } from "ra-core";
 
 const logger = new SimpleLogger("uploader", false);
 
+/**
+ * Creates new records in the data provider from CSV values.
+ * Applies the preCommitCallback before sending and the postCommitCallback after completion.
+ * @param logging - Whether to enable debug logging.
+ * @param disableCreateMany - If true, falls back to individual create calls.
+ * @param dataProvider - The ra-core DataProvider instance.
+ * @param resource - The target resource name.
+ * @param values - Array of row objects to create.
+ * @param preCommitCallback - Optional callback to transform values before creation.
+ * @param postCommitCallback - Optional callback invoked with report items after creation.
+ */
 export async function create(
   logging: boolean,
   disableCreateMany: boolean | undefined,
@@ -33,6 +44,17 @@ export async function create(
   }
 }
 
+/**
+ * Updates existing records in the data provider from CSV values.
+ * Applies the preCommitCallback before sending and the postCommitCallback after completion.
+ * @param logging - Whether to enable debug logging.
+ * @param disableUpdateMany - If true, falls back to individual update calls.
+ * @param dataProvider - The ra-core DataProvider instance.
+ * @param resource - The target resource name.
+ * @param values - Array of row objects to update (must include `id`).
+ * @param preCommitCallback - Optional callback to transform values before update.
+ * @param postCommitCallback - Optional callback invoked with report items after update.
+ */
 export async function update(
   logging: boolean,
   disableUpdateMany: boolean | undefined,
@@ -62,6 +84,7 @@ export async function update(
   }
 }
 
+/** Represents the outcome of a single create or update operation. */
 interface ReportItem {
   value: any;
   success: boolean;
@@ -69,6 +92,16 @@ interface ReportItem {
   response?: any;
 }
 
+/**
+ * Sends create requests to the data provider, attempting createMany first.
+ * Falls back to individual create calls if createMany is disabled or not supported.
+ * @param logging - Whether to enable debug logging.
+ * @param disableCreateMany - If true, skips createMany and uses individual calls.
+ * @param dataProvider - The ra-core DataProvider instance.
+ * @param resource - The target resource name.
+ * @param values - Array of row objects to create.
+ * @returns An array of report items describing each operation's result.
+ */
 export async function createInDataProvider(
   logging: boolean,
   disableCreateMany: boolean,
@@ -117,6 +150,7 @@ export async function createInDataProvider(
   return reportItems;
 }
 
+/** Fallback that creates records one-by-one using individual `dataProvider.create` calls. */
 async function createInDataProviderFallback(
   dataProvider: DataProvider,
   resource: string,
@@ -136,6 +170,10 @@ async function createInDataProviderFallback(
   return reportItems;
 }
 
+/**
+ * Sends update requests to the data provider, attempting updateManyArray first.
+ * Falls back to individual update calls if updateManyArray is disabled or not supported.
+ */
 async function updateInDataProvider(
   logging: boolean,
   disableUpdateMany: boolean,
@@ -190,6 +228,7 @@ async function updateInDataProvider(
   return reportItems;
 }
 
+/** Fallback that updates records one-by-one using individual `dataProvider.update` calls. */
 async function updateInDataProviderFallback(
   dataProvider: DataProvider,
   resource: string,
@@ -209,6 +248,7 @@ async function updateInDataProviderFallback(
   return reportItems;
 }
 
+/** Checks whether an error's string representation contains any of the given substrings. */
 function doesErrorContainString(error: any, stringsToCheck: string[]): boolean {
   const errorString = (!!error && typeof error === 'object' && error?.toString()) || '';
   const shouldTryFallback = stringsToCheck.some(stringToCheck => errorString.includes(stringToCheck));

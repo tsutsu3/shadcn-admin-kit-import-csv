@@ -1,5 +1,9 @@
 import { ParseConfig } from "papaparse";
 
+/**
+ * Configuration interface for controlling CSV import behavior.
+ * Allows toggling buttons, batch operations, and setting callbacks for data transformation and validation.
+ */
 export interface ImportConfig {
   // Enable logging
   logging?: boolean;
@@ -25,6 +29,11 @@ export interface ImportConfig {
   parseConfig?: ParseConfig,
 };
 
+/** Callback invoked before committing data, allowing transformation of values based on the action type. */
 export type PrecommitCallback = (action: "create" | "overwrite", values: any[]) => Promise<any[]>;
+
+/** Async validation function for a single CSV row. Reject the promise to indicate validation failure. */
 export type ValidateRowFunction = (csvRowItem: any, index?: any, allItems?: any[]) => Promise<void>;
+
+/** Callback invoked after commit to handle errors or report results. */
 export type ErrorCallback = (error: any) => void;

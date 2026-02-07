@@ -1,92 +1,64 @@
-on: 
-  push: 
-    branches: 
-      - master
+name: CI
 
-name: Build and Publish
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  build:
-    if: "!contains(github.event.head_commit.message, 'no-ci')"
-    name: Build Library
+  test:
+    name: Test & Build
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 16.18.1
-    - uses: actions/cache@v1
-      id: cache-modules
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-    - run: yarn install --pure-lockfile
-      if: steps.cache-modules.outputs.cache-hit != 'true'
-    - run: yarn build
-    - run: yarn test
-    - run: yarn test:badges
-    - name: Upload esm build artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: build-esm
-        path: esm
-    - name: Upload lib build artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: build-lib
-        path: lib
+    strategy:
+      matrix:
+        node-version: [20, 22]
 
-  deploy:
-    if: "!contains(github.event.head_commit.message, 'no-deploy-lib')"
-    needs: build
-    name: Deploy Library
-    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 16.18.1
-    - uses: actions/cache@v1
-      id: cache-modules
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-    - name: Download build-lib
-      uses: actions/download-artifact@v2
-      with:
-        name: build-lib
-        path: lib
-    - name: Download build-esm
-      uses: actions/download-artifact@v2
-      with:
-        name: build-esm
-        path: esm
-    - name: Deploy to NPM! 🚀
-      uses: Github-Actions-Community/merge-release@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - uses: actions/checkout@v4
 
-  demo:
-    needs: build
-    name: Deploy Demo
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+
+      - run: pnpm test
+
+      - run: pnpm build
+
+  publish:
+    name: Publish to npm
+    needs: test
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 16.18.1
-    - uses: actions/cache@v1
-      id: cache-modules
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-    - run: yarn build-for-demo
-    - run: yarn build
-      working-directory: ./demo
-    - name: Deploy 🚀
-      if: github.ref == 'refs/heads/master'
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: demo/build # The folder the action should deploy.
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      - run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

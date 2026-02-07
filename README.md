@@ -1,265 +1,177 @@
-# react-admin-import-csv
+# shadcn-admin-kit-import-csv
 
-<!-- [START badges] -->
+[![NPM Version](https://img.shields.io/npm/v/shadcn-admin-kit-import-csv.svg)](https://www.npmjs.com/package/shadcn-admin-kit-import-csv)
+[![License](https://img.shields.io/npm/l/shadcn-admin-kit-import-csv.svg)](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/blob/main/LICENSE)
 
-[![NPM Version](https://img.shields.io/npm/v/react-admin-import-csv.svg)](https://www.npmjs.com/package/react-admin-import-csv)
-[![Downloads/week](https://img.shields.io/npm/dm/react-admin-import-csv.svg)](https://www.npmjs.com/package/react-admin-import-csv)
-[![License](https://img.shields.io/npm/l/react-admin-import-csv.svg)](https://github.com/benwinding/react-admin-import-csv/blob/master/LICENSE)
-[![Github Issues](https://img.shields.io/github/issues/benwinding/react-admin-import-csv.svg)](https://github.com/benwinding/react-admin-import-csv)
-![Build and Publish](https://github.com/benwinding/react-admin-import-csv/workflows/Build%20and%20Publish/badge.svg)
-[![Code Coverage](https://raw.githubusercontent.com/benwinding/react-admin-import-csv/master/coverage/badge-lines.svg?sanitize=true)](./coverage/coverage-summary.json)
+CSV/TSV import button for [react-admin](https://github.com/marmelab/react-admin) using **shadcn/ui** + **Tailwind CSS**.
 
-<!-- [END badges] -->
+A fork of [react-admin-import-csv](https://github.com/benwinding/react-admin-import-csv) with Material UI replaced by [shadcn/ui](https://ui.shadcn.com/) components (Radix UI + Tailwind CSS).
 
-CSV import button for the [react-admin](https://github.com/marmelab/react-admin) framework.
+## Features
 
-![image](https://user-images.githubusercontent.com/11782590/93659721-83622e00-fa87-11ea-90c4-650aecf60a6a.gif)
+- Import CSV/TSV files into any react-admin resource
+- Collision detection — skip, replace, or decide per row
+- Bulk operations via `createMany` / `updateManyArray` with fallback
+- Built-in i18n (en, ja, de, es, fr, zh, ru, nl, pl, ptBR)
+- shadcn/ui Dialog, Button, Tooltip components
+- Tailwind CSS styling — no Material UI dependency
+
+## Installation
+
+```bash
+npm install shadcn-admin-kit-import-csv
+# or
+pnpm add shadcn-admin-kit-import-csv
+```
+
+### Peer Dependencies
+
+This package requires the following peer dependencies:
+
+```bash
+npm install react react-dom ra-core papaparse lucide-react \
+  @radix-ui/react-dialog @radix-ui/react-tooltip @radix-ui/react-slot \
+  class-variance-authority clsx tailwind-merge
+```
 
 ## Usage
 
-Simply import the button into a toolbar, like so:
+### Basic
 
-### Basic Import Action Only
+```tsx
+import { Datagrid, List, TextField, TopToolbar, CreateButton, ExportButton } from "react-admin";
+import { ImportButton } from "shadcn-admin-kit-import-csv";
 
-```js
-import {
-  Datagrid,
-  List,
-  TextField,
-  RichTextField,
-  TopToolbar,
-} from "react-admin";
-import { ImportButton } from "react-admin-import-csv";
-import { CreateButton } from "ra-ui-materialui";
+const ListActions = () => (
+  <TopToolbar>
+    <CreateButton />
+    <ExportButton />
+    <ImportButton />
+  </TopToolbar>
+);
 
-const ListActions = (props) => {
-  const { className, basePath } = props;
-  return (
-    <TopToolbar className={className}>
-      <CreateButton basePath={basePath} />
-      <ImportButton {...props} />
-    </TopToolbar>
-  );
-};
-export const PostList = (props) => (
-  <List {...props} filters={<PostFilter />} actions={<ListActions />}>
+export const PostList = () => (
+  <List actions={<ListActions />}>
     <Datagrid>
+      <TextField source="id" />
       <TextField source="title" />
-      <RichTextField source="body" />
-      ...
     </Datagrid>
   </List>
 );
 ```
 
-### Export/Import Actions
+### With Configuration
 
-```js
-import {
-  Datagrid,
-  List,
-  TextField,
-  RichTextField,
-  TopToolbar,
-} from "react-admin";
-import { ImportButton } from "react-admin-import-csv";
-import { CreateButton, ExportButton } from "ra-ui-materialui";
+```tsx
+import { ImportButton, ImportConfig } from "shadcn-admin-kit-import-csv";
 
-const ListActions = (props) => {
-  const {
-    className,
-    basePath,
-    total,
-    resource,
-    currentSort,
-    filterValues,
-    exporter,
-  } = props;
-  return (
-    <TopToolbar className={className}>
-      <CreateButton basePath={basePath} />
-      <ExportButton
-        disabled={total === 0}
-        resource={resource}
-        sort={currentSort}
-        filter={filterValues}
-        exporter={exporter}
-      />
-      <ImportButton {...props} />
-    </TopToolbar>
-  );
+const config: ImportConfig = {
+  logging: true,
+  parseConfig: { dynamicTyping: true },
+  validateRow: async (row) => {
+    if (!row.title) throw new Error("Title is required");
+  },
+  preCommitCallback: async (action, values) => {
+    console.log(`Action: ${action}, Count: ${values.length}`);
+    return values;
+  },
+  postCommitCallback: (reportItems) => {
+    console.log("Import result:", reportItems);
+  },
 };
-export const PostList = (props) => (
-  <List {...props} filters={<PostFilter />} actions={<ListActions />}>
-    <Datagrid>
-      <TextField source="title" />
-      <RichTextField source="body" />
-      ...
-    </Datagrid>
-  </List>
+
+const ListActions = () => (
+  <TopToolbar>
+    <ImportButton {...config} />
+  </TopToolbar>
 );
 ```
 
 ## Configuration Options
 
 ```typescript
-// All configuration options are optional
-const config: ImportConfig = {
+interface ImportConfig {
   // Enable logging
   logging?: boolean;
-  // Disable the attempt to use "createMany", will instead just use "create" calls
-  disableCreateMany?: boolean,
-  // Disable the attempt to use "updateMany", will instead just use "update" calls
-  disableUpdateMany?: boolean,
-  // Disable the attempt to use "getMany", will instead just use "getSingle" calls
-  disableGetMany?: boolean,
+  // Disable "createMany" (uses "create" per item instead)
+  disableCreateMany?: boolean;
+  // Disable "updateMany" (uses "update" per item instead)
+  disableUpdateMany?: boolean;
+  // Disable "getMany" (uses "getOne" per item instead)
+  disableGetMany?: boolean;
   // Disable "import new" button
   disableImportNew?: boolean;
   // Disable "import overwrite" button
   disableImportOverwrite?: boolean;
-  // A function to translate the CSV rows on import
+  // Transform values before create/update
   preCommitCallback?: (action: "create" | "overwrite", values: any[]) => Promise<any[]>;
-  // A function to handle row errors after import
+  // Handle errors after import
   postCommitCallback?: (error: any) => void;
-  // Transform rows before anything is sent to dataprovider
+  // Transform CSV rows before processing
   transformRows?: (csvRows: any[]) => Promise<any[]>;
-  // Async function to Validate a row, reject the promise if it's not valid
-  validateRow?: (csvRowItem: any) => Promise<void>;
-  // Any option from the "papaparse" library
-  parseConfig?: {
-    // For all options see: https://www.papaparse.com/docs#config
-  }
-}
-<ImportButton {...props} {...config}/>
-```
-
-## Handle `id` fields which might be numbers
-
-Use the `paparse` configuration option [`dynamicTyping`](https://www.papaparse.com/docs)
-
-```js
-const importOptions = {
-  parseConfig?: {
-    // For all options see: https://www.papaparse.com/docs#config
-    dynamicTyping: true
-  }
+  // Validate each row (reject promise to fail)
+  validateRow?: (csvRowItem: any, index?: any, allItems?: any[]) => Promise<void>;
+  // papaparse config: https://www.papaparse.com/docs#config
+  parseConfig?: ParseConfig;
 }
 ```
 
-## Reducing Requests (`.createMany()` and `.updateMany()`)
+## Bulk Operations
 
-Your dataprovider will need to implement the `.createMany()` method in order to reduce requests to your backend. If it doesn't exist, it will fallback to calling `.create()` on all items, as shown below (same goes for `.update()`):
+Your DataProvider can implement optional bulk methods to reduce API calls:
 
-| Name              | Special Method     | Fallback Method |
-| ----------------- | ------------------ | --------------- |
-| Creating from CSV | .createMany()      | .create()       |
-| Updating from CSV | .updateManyArray() | .update()       |
-| Checking which exist | .getMany() | .getSingle()       |
-
-*Note: You can disable this feature setting `disableCreateMany: true` or `disableUpdateMany: true` in the configuration.*
-### Interfaces
-
-The dataprovider should accept these param interfaces for the bulk create/update methods.
+| Operation | Bulk Method | Fallback |
+| --- | --- | --- |
+| Create | `.createMany()` | `.create()` per item |
+| Update | `.updateManyArray()` | `.update()` per item |
+| Check existing | `.getMany()` | `.getOne()` per item |
 
 ```typescript
-export interface UpdateManyArrayParams {
+interface CreateManyParams {
+  data: any[];
+}
+
+interface UpdateManyArrayParams {
   ids: Identifier[];
   data: any[];
 }
-export interface CreateManyParams {
-  data: any[];
-}
 ```
 
-### Example Implementation
+## i18n
 
-Here's a quick example of how to implement `.createMany()` and `.updateMany()` in your dataprovider:
+This package includes built-in translations and falls back to English if no translation is found. To use translations with react-admin's i18n system:
 
-``` js
-// Must be react-admin 3.x
-const dataProviderWrapped = {
-  ...dataProvider, // <- Your data provider
-  createMany: async (resource, params) => {
-    const items = params.data;
-    // Handle create many here
-  },
-  updateMany: async (resource, params) => {
-    const items = params.data;
-    const idsToUpdate = params.ids;
-    // Handle update many here
-  }
-}
+```tsx
+import { i18n } from "shadcn-admin-kit-import-csv";
 
-// Pass into to other parts of the system as normal
-return (
-  <Admin dataProvider={dataProviderWrapped}
-```
-
-## Translation `i18n`
-
-This package uses `react-admin`'s global i18n translation. Below is an example on how to set it up with this package.
-
-Current supported languages (submit a PR if you'd like to add a language):
-
-- English (en)
-- Spanish (es)
-- Chinese (zh)
-- German (de)
-- French (fr)
-- Brazilian Portuguese (ptBR)
-- Russian (ru)
-- Dutch (nl)
-
-**Example (i18nProvider)**
-
-```jsx
-import { resolveBrowserLocale, useLocale } from "react-admin";
-import polyglotI18nProvider from "ra-i18n-polyglot";
-import englishMessages from "ra-language-english";
-// This package's translations
-import * as domainMessages from "react-admin-import-csv/lib/i18n";
-
-// Select locale based on react-admin OR browser
-const locale = useLocale() || resolveBrowserLocale();
-// Create messages object
 const messages = {
-  // Delete languages you don't need
-  en: { ...englishMessages, ...domainMessages.en },
-  zh: { ...chineseMessages, ...domainMessages.zh },
-  es: { ...spanishMessages, ...domainMessages.es },
+  en: { ...englishMessages, ...i18n.en },
+  ja: { ...japaneseMessages, ...i18n.ja },
 };
-// Create polyglot provider
-const i18nProvider = polyglotI18nProvider(
-  (locale) => (messages[locale] ? messages[locale] : messages.en),
-  locale
-);
-
-// declare prop in Admin component
-<Admin dataProvider={dataProvider} i18nProvider={i18nProvider}>
 ```
 
-[More information on this setup here](https://marmelab.com/react-admin/Translation.html)
+Supported languages: English (en), Japanese (ja), German (de), Spanish (es), French (fr), Chinese (zh), Brazilian Portuguese (ptBR), Russian (ru), Dutch (nl), Polish (pl)
 
-# Development
+## Development
 
-If you'd like to develop on `react-admin-import-csv` do the following.
+```bash
+# Install dependencies
+pnpm install
 
-## Local install
+# Type check
+pnpm typecheck
 
-- `git clone https://github.com/benwinding/react-admin-import-csv/`
-- `cd react-admin-import-csv`
-- `yarn`
+# Run tests
+pnpm test
 
-## Tests
+# Build
+pnpm build
+```
 
-- `yarn test # in root folder`
+## Credits
 
-## Run demo
+This project is a fork of [react-admin-import-csv](https://github.com/benwinding/react-admin-import-csv) by [Ben Winding](https://github.com/benwinding), with Material UI components replaced by shadcn/ui.
 
-Open another terminal
+## License
 
-- `yarn build-watch`
-
-Open another terminal and goto the `demo` folder
-
-- `yarn start`
+[MIT](LICENSE) - Copyright (c) 2020 Ben Winding, 2025 tsutsu3
