@@ -7,6 +7,8 @@ CSV/TSV import button for [react-admin](https://github.com/marmelab/react-admin)
 
 A fork of [react-admin-import-csv](https://github.com/benwinding/react-admin-import-csv) with Material UI replaced by [shadcn/ui](https://ui.shadcn.com/) components (Radix UI + Tailwind CSS).
 
+**[Live Demo](https://tsutsu3.github.io/shadcn-admin-kit-import-csv/)**
+
 ![List view with Import buttons](docs/assets/home.png)
 
 ## Features
