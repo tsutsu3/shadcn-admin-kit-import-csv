@@ -62,6 +62,8 @@ export const ImportButton = (
     resourceName = resource;
   }
 
+  const notify = useNotify();
+
   const [open, setOpen] = React.useState(false);
   const [openAskDecide, setOpenAskDecide] = React.useState(false);
   const [values, setValues] = React.useState([] as any[]);
@@ -144,6 +146,10 @@ export const ImportButton = (
       })
       .catch((error) => {
         mounted && resetVars();
+        notify(
+          typeof error === "string" ? error : (error?.message || String(error)),
+          { type: "error" },
+        );
         logger.error(error);
       });
 
@@ -198,7 +204,6 @@ export const ImportButton = (
     setFile(file);
   };
 
-  const notify = useNotify();
   const handleClose = () => {
     logger.log("handleClose", { file });
     resetVars();

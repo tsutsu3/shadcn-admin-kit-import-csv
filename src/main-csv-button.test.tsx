@@ -81,7 +81,11 @@ vi.mock("./ui/button", () => ({
 // ─── Imports (after mocks) ──────────────────────────────────────────
 
 import { ImportButton } from "./main-csv-button";
-import { GetCSVItems, GetIdsColliding } from "./import-controller";
+import {
+  GetCSVItems,
+  CheckCSVValidation,
+  GetIdsColliding,
+} from "./import-controller";
 import { create, update } from "./uploader";
 
 // ─── Test helpers ───────────────────────────────────────────────────
@@ -259,6 +263,43 @@ describe("ImportButton - 'Let me decide' flow", () => {
       expect(screen.queryByTestId("dialog")).not.toBeInTheDocument();
     });
     expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it("should abort import and close dialog when validateRow rejects (column mismatch)", async () => {
+    // CSV has wrong columns: name/email instead of title
+    vi.mocked(GetCSVItems).mockResolvedValue([
+      { id: "1", name: "Alice", email: "alice@test.com" },
+    ]);
+    vi.mocked(CheckCSVValidation).mockRejectedValueOnce(
+      "'title' column is required",
+    );
+
+    const result = render(<ImportButton />);
+    const input = result.container.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+
+    await act(async () => {
+      fireEvent.change(input, {
+        target: { files: [new File([""], "wrong-columns.csv")] },
+      });
+    });
+
+    // Dialog should close (resetVars called in catch)
+    await waitFor(() => {
+      expect(screen.queryByTestId("dialog")).not.toBeInTheDocument();
+    });
+
+    // GetIdsColliding should never be reached
+    expect(GetIdsColliding).not.toHaveBeenCalled();
+    // No create or update should happen
+    expect(create).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
+    // Error notification should show the original validateRow message
+    expect(mockNotify).toHaveBeenCalledWith(
+      "'title' column is required",
+      { type: "error" },
+    );
   });
 
   it("should replace first item then skip second item", async () => {

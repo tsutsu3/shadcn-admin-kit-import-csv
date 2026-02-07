@@ -148,7 +148,9 @@ export async function CheckCSVValidation(
     await Promise.all(csvValues.map(validateRow));
   } catch (error) {
     logger.error("CheckCSVValidation", { csvValues }, error);
-    throw translate("csv.parsing.failedValidateRow");
+    throw error instanceof Error
+      ? error.message
+      : translate("csv.parsing.failedValidateRow");
   }
 }
 

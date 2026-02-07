@@ -145,10 +145,43 @@ describe("CheckCSVValidation", () => {
     expect(validateRow).toHaveBeenCalledTimes(2);
   });
 
-  it("should throw when a row fails validation", async () => {
+  it("should throw original Error message when validateRow rejects with Error", async () => {
     const validateRow = vi.fn().mockRejectedValue(new Error("Invalid row"));
     await expect(
       CheckCSVValidation(false, translate, [{ id: 1 }], validateRow)
+    ).rejects.toBe("Invalid row");
+  });
+
+  it("should throw translation key when validateRow rejects with non-Error", async () => {
+    const validateRow = vi.fn().mockRejectedValue("some string");
+    await expect(
+      CheckCSVValidation(false, translate, [{ id: 1 }], validateRow)
     ).rejects.toBe("csv.parsing.failedValidateRow");
+  });
+
+  it("should reject with original message when CSV has wrong columns", async () => {
+    const validateRow = async (row: any) => {
+      if (row.title == null) throw new Error("'title' column is required");
+    };
+    const wrongColumnData = [
+      { id: "1", name: "Alice", email: "alice@test.com" },
+      { id: "2", name: "Bob", email: "bob@test.com" },
+    ];
+    await expect(
+      CheckCSVValidation(false, translate, wrongColumnData, validateRow)
+    ).rejects.toBe("'title' column is required");
+  });
+
+  it("should pass when CSV rows have correct columns", async () => {
+    const validateRow = async (row: any) => {
+      if (row.title == null) throw new Error("'title' column is required");
+    };
+    const correctData = [
+      { id: "1", title: "Hello" },
+      { id: "2", title: "World" },
+    ];
+    await expect(
+      CheckCSVValidation(false, translate, correctData, validateRow)
+    ).resolves.toBeUndefined();
   });
 });
