@@ -114,8 +114,8 @@ importers:
         specifier: ^7.13.0
         version: 7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       shadcn-admin-kit-import-csv:
-        specifier: link:..
-        version: link:..
+        specifier: file:..
+        version: file:..(@radix-ui/react-dialog@1.1.15(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@radix-ui/react-slot@1.2.4(@types/react@19.2.13)(react@19.2.4))(@radix-ui/react-tooltip@1.2.8(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(class-variance-authority@0.7.1)(clsx@2.1.1)(lucide-react@0.460.0(react@19.2.4))(papaparse@5.5.3)(ra-core@5.14.1(@tanstack/react-query@5.90.20(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.1(react@19.2.4))(react-router-dom@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.4.0)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2874,6 +2874,21 @@ packages:
 
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
+
+  shadcn-admin-kit-import-csv@file:..:
+    resolution: {directory: .., type: directory}
+    peerDependencies:
+      '@radix-ui/react-dialog': ^1.0.0
+      '@radix-ui/react-slot': ^1.0.0
+      '@radix-ui/react-tooltip': ^1.0.0
+      class-variance-authority: ^0.7.0
+      clsx: ^2.0.0
+      lucide-react: '>=0.300.0'
+      papaparse: ^5.0.0
+      ra-core: ^5.0.0
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+      tailwind-merge: ^3.0.0
 
   shadcn@3.8.4:
     resolution: {integrity: sha512-pSad/m1+PGzB0aLsRBV0EkyGg9al1nJqYUuucg6d8v8xZspPZ5/ehGNEp5M4b1KQYqdO5/gGPbkhVbgmXqG9Pw==}
@@ -5894,6 +5909,20 @@ snapshots:
       has-property-descriptors: 1.0.2
 
   setprototypeof@1.2.0: {}
+
+  shadcn-admin-kit-import-csv@file:..(@radix-ui/react-dialog@1.1.15(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@radix-ui/react-slot@1.2.4(@types/react@19.2.13)(react@19.2.4))(@radix-ui/react-tooltip@1.2.8(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(class-variance-authority@0.7.1)(clsx@2.1.1)(lucide-react@0.460.0(react@19.2.4))(papaparse@5.5.3)(ra-core@5.14.1(@tanstack/react-query@5.90.20(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.1(react@19.2.4))(react-router-dom@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.4.0):
+    dependencies:
+      '@radix-ui/react-dialog': 1.1.15(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@radix-ui/react-slot': 1.2.4(@types/react@19.2.13)(react@19.2.4)
+      '@radix-ui/react-tooltip': 1.2.8(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      class-variance-authority: 0.7.1
+      clsx: 2.1.1
+      lucide-react: 0.460.0(react@19.2.4)
+      papaparse: 5.5.3
+      ra-core: 5.14.1(@tanstack/react-query@5.90.20(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.1(react@19.2.4))(react-router-dom@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      tailwind-merge: 3.4.0
 
   shadcn@3.8.4(babel-plugin-macros@3.1.0):
     dependencies:
