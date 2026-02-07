@@ -2,7 +2,7 @@ import { ErrorCallback, PrecommitCallback } from "./config.interface";
 import { SimpleLogger } from "./SimpleLogger";
 import { DataProvider } from "ra-core";
 
-let logger = new SimpleLogger("uploader", false);
+const logger = new SimpleLogger("uploader", false);
 
 export async function create(
   logging: boolean,
@@ -85,7 +85,7 @@ export async function createInDataProvider(
     return items;
   }
   try {
-    const response = await dataProvider.createMany(resource, { data: values });
+    const response = await (dataProvider as any).createMany(resource, { data: values });
     reportItems.push({
       value: null, success: true, response: response
     })
@@ -158,7 +158,7 @@ async function updateInDataProvider(
   }
   const reportItems: ReportItem[] = [];
   try {
-    const response = await dataProvider.updateManyArray(resource, { ids: ids, data: values });
+    const response = await (dataProvider as any).updateManyArray(resource, { ids: ids, data: values });
     reportItems.push({
       value: null, success: true, response: response
     })

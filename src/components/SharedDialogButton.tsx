@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ListItem } from "@mui/material";
+import { Button } from "../ui/button";
 
 export function SharedDialogButton(props: {
   onClick: () => void;
@@ -8,17 +8,14 @@ export function SharedDialogButton(props: {
   disabled?: boolean;
 }) {
   return (
-    <ListItem disableGutters={true}>
-      <Button
-        disabled={props.disabled}
-        style={{ width: "100%", backgroundColor: "#efefef", padding: "13px" }}
-        onClick={props.onClick}
-      >
-        {props.icon}
-        <span style={{ width: "100%", textAlign: "left", marginLeft: "8px" }}>
-          {props.label}
-        </span>
-      </Button>
-    </ListItem>
+    <Button
+      variant="outline"
+      className="w-full justify-start gap-3 px-4 py-3 h-auto"
+      disabled={props.disabled}
+      onClick={props.onClick}
+    >
+      {props.icon}
+      <span className="text-left">{props.label}</span>
+    </Button>
   );
 }

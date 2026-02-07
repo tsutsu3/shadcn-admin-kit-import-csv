@@ -1,10 +1,8 @@
-import React from "react";
 import { SharedDialogButton } from "./SharedDialogButton";
 import { SharedDialogWrapper } from "./SharedDialogWrapper";
 import { SharedLoader } from "./SharedLoader";
 import { translateWrapper } from "../translateWrapper";
-import { List } from "@mui/material";
-import { Done, Undo, Clear, Add } from "@mui/icons-material";
+import { Check, Plus, Undo2, X } from "lucide-react";
 
 interface ImportCsvDialogEachItemProps {
   disableImportNew: boolean;
@@ -23,7 +21,9 @@ interface ImportCsvDialogEachItemProps {
   idsConflicting: string[];
 }
 
-export const ImportCsvDialogEachItem = (props: ImportCsvDialogEachItemProps) => {
+export const ImportCsvDialogEachItem = (
+  props: ImportCsvDialogEachItemProps,
+) => {
   const {
     disableImportNew,
     disableImportOverwrite,
@@ -56,23 +56,23 @@ export const ImportCsvDialogEachItem = (props: ImportCsvDialogEachItemProps) => 
       open={openAskDecide}
       handleClose={handleClose}
     >
-      {isLoading && <SharedLoader loadingTxt={translate("csv.loading")}></SharedLoader>}
+      {isLoading && <SharedLoader loadingTxt={translate("csv.loading")} />}
       {!isLoading && (
-        <div>
+        <div className="space-y-3">
           <p
-            style={{ fontFamily: "sans-serif", margin: "0" }}
+            className="text-sm text-muted-foreground"
             dangerouslySetInnerHTML={{
               __html: translate("csv.dialogCommon.conflictCount", {
                 resource: resourceName,
                 conflictingCount: idsConflicting && idsConflicting.length,
               }),
             }}
-          ></p>
-          <List>
+          />
+          <div className="flex flex-col gap-2">
             <SharedDialogButton
               disabled={disableImportOverwrite}
               onClick={handleAskDecideReplace}
-              icon={<Done htmlColor="#29c130" />}
+              icon={<Check className="size-4 text-green-500" />}
               label={translate("csv.dialogDecide.buttons.replaceRow", {
                 id: currentValue && currentValue.id,
               })}
@@ -80,20 +80,20 @@ export const ImportCsvDialogEachItem = (props: ImportCsvDialogEachItemProps) => 
             <SharedDialogButton
               disabled={disableImportNew}
               onClick={handleAskDecideAddAsNew}
-              icon={<Add htmlColor="#3a88ca" />}
+              icon={<Plus className="size-4 text-blue-500" />}
               label={translate("csv.dialogDecide.buttons.addAsNewRow")}
             />
             <SharedDialogButton
               onClick={handleAskDecideSkip}
-              icon={<Undo htmlColor="black" />}
+              icon={<Undo2 className="size-4" />}
               label={translate("csv.dialogDecide.buttons.skipDontReplace")}
             />
             <SharedDialogButton
               onClick={handleAskDecideSkipAll}
-              icon={<Clear htmlColor="#3a88ca" />}
+              icon={<X className="size-4 text-blue-500" />}
               label={translate("csv.dialogCommon.buttons.cancel")}
             />
-          </List>
+          </div>
         </div>
       )}
     </SharedDialogWrapper>

@@ -6,14 +6,14 @@ export class SimpleLogger {
   constructor(private prefix: string, private debug: boolean) {}
 
   private getLogString() {
-    return `🌟 react-admin-import-csv:: ${this.prefix} [${this.loggerID}] `;
+    return `shadcn-ra-csv-import:: ${this.prefix} [${this.loggerID}] `;
   }
   
   public get log() {
     if (!this.debug) {
-      return (...any) => {};
+      return (..._any: any[]) => {};
     }
-    const boundLogFn: (...any) => void = console.log.bind(
+    const boundLogFn: (...args: any[]) => void = console.log.bind(
       console,
       this.getLogString()
     );
@@ -22,9 +22,9 @@ export class SimpleLogger {
 
   public get warn() {
     if (!this.debug) {
-      return (...any) => {};
+      return (..._any: any[]) => {};
     }
-    const boundLogFn: (...any) => void = console.warn.bind(
+    const boundLogFn: (...args: any[]) => void = console.warn.bind(
       console,
       this.getLogString()
     );
@@ -33,9 +33,9 @@ export class SimpleLogger {
 
   public get error() {
     if (!this.debug) {
-      return (...any) => {};
+      return (..._any: any[]) => {};
     }
-    const boundLogFn: (...any) => void = console.error.bind(
+    const boundLogFn: (...args: any[]) => void = console.error.bind(
       console,
       this.getLogString()
     );

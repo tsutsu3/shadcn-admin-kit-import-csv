@@ -1,42 +1,30 @@
 import React from "react";
 import {
   Dialog,
-
   DialogContent,
-  DialogTitle
-} from "@mui/material";
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
 export function SharedDialogWrapper(props: {
   open: boolean;
   title: string;
   subTitle: string;
   handleClose: () => any;
-  children?: any;
+  children?: React.ReactNode;
 }) {
   return (
     <Dialog
       open={props.open}
-      onClose={props.handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      onOpenChange={(open) => !open && props.handleClose()}
     >
-      <DialogTitle id="alert-dialog-title">{props.title}</DialogTitle>
-      <DialogContent>
-        <div style={{ width: "400px", maxWidth: "100%" }}>
-          <p
-            style={{
-              fontFamily: "sans-serif",
-              margin: "0",
-              fontSize: "0.9em",
-              marginBottom: "10px",
-              marginTop: "0px",
-              color: "#555",
-            }}
-          >
-            {props.subTitle}
-          </p>
-          {props.children}
-        </div>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{props.title}</DialogTitle>
+          <DialogDescription>{props.subTitle}</DialogDescription>
+        </DialogHeader>
+        <div className="max-w-full">{props.children}</div>
       </DialogContent>
     </Dialog>
   );

@@ -1,5 +1,10 @@
 import React from "react";
-import {useRefresh, useNotify, useDataProvider, useResourceContext} from "react-admin";
+import {
+  useRefresh,
+  useNotify,
+  useDataProvider,
+  useResourceContext,
+} from "ra-core";
 
 import { ImportConfig } from "./config.interface";
 import { SimpleLogger } from "./SimpleLogger";
@@ -12,9 +17,14 @@ import { create, update } from "./uploader";
 import { translateWrapper } from "./translateWrapper";
 import { ImportCsvDialogStrategy } from "./components/import-csv-dialog-strategy";
 import { ImportCsvDialogEachItem } from "./components/import-csv-dialog-each-item";
-import { ImportButton } from "./components/import-button";
+import { ImportButtonUI } from "./components/import-button";
 
-export const MainCsvImport = (props: any) => {
+export const ImportButton = (
+  props: ImportConfig & {
+    label?: string;
+    resourceName?: string;
+  },
+) => {
   const refresh = useRefresh();
   const translate = translateWrapper();
   const dataProvider = useDataProvider();
@@ -31,12 +41,12 @@ export const MainCsvImport = (props: any) => {
     disableGetMany,
     disableImportNew,
     disableImportOverwrite,
-  } = props as ImportConfig;
+  } = props;
   const disableNew = !!disableImportNew;
   const disableOverwrite = !!disableImportOverwrite;
 
   const logging = !!props.logging;
-  let { variant, label, resourceName } = props;
+  let { label, resourceName } = props;
   const logger = new SimpleLogger("import-csv-button", true);
   logger.setEnabled(logging);
 
@@ -45,11 +55,7 @@ export const MainCsvImport = (props: any) => {
   }
 
   if (!label) {
-    label = translate("csv.buttonMain.label", { numb: 99 });
-  }
-
-  if (!variant) {
-    variant = "text";
+    label = translate("csv.buttonMain.label");
   }
 
   if (!resourceName) {
@@ -74,25 +80,29 @@ export const MainCsvImport = (props: any) => {
     }
     setOpen(true);
     async function processCSV(): Promise<[any[], boolean]> {
-      // Is valid csv
       if (!file) {
         throw new Error("File not processed from input field");
       }
       logger.log("Parsing CSV file");
-      const csvRows = await GetCSVItems(logging, translate, file, parseConfig);
-      const csvItems = transformRows ? await transformRows(csvRows) : csvRows
+      const csvRows = await GetCSVItems(
+        logging,
+        translate,
+        file,
+        parseConfig,
+      );
+      const csvItems = transformRows
+        ? await transformRows(csvRows)
+        : csvRows;
       mounted && setValues(csvItems);
-      // Does CSV pass user validation
       logger.log("Validating CSV file");
       await CheckCSVValidation(logging, translate, csvItems, validateRow);
-      // Are there any import overwrites?
       logger.log("Checking rows to import");
       const collidingIds = await GetIdsColliding(
         logging,
         translate,
         dataProvider,
         csvItems,
-        resourceName,
+        resourceName!,
         disableGetMany,
       );
       mounted && setIdsConflicting(collidingIds);
@@ -101,18 +111,23 @@ export const MainCsvImport = (props: any) => {
       if (!hasCollidingIds) {
         return [csvItems, hasCollidingIds];
       }
-      // Ask Replace X Rows? Skip these rows? Decied For Each?
-      const collidingIdsStringsSet = new Set(collidingIds.map((id) => id+''));
-      const collidingIdsNumbersSet = new Set();
+      const collidingIdsStringsSet = new Set(
+        collidingIds.map((id) => id + ""),
+      );
+      const collidingIdsNumbersSet = new Set<number>();
 
-      const collidingIdsAsNumbers = collidingIds.map((id) => parseFloat(id+''));
-      const allCollidingIdsAreNumbers = collidingIdsAsNumbers.every(id => isFinite(id));
+      const collidingIdsAsNumbers = collidingIds.map((id) =>
+        parseFloat(id + ""),
+      );
+      const allCollidingIdsAreNumbers = collidingIdsAsNumbers.every((id) =>
+        isFinite(id),
+      );
       if (allCollidingIdsAreNumbers) {
-        collidingIdsAsNumbers.map(id => collidingIdsNumbersSet.add(id))        
+        collidingIdsAsNumbers.map((id) => collidingIdsNumbersSet.add(id));
       }
       function idNotInNumbersOrStrings(item: any) {
-        const matchesIdString = collidingIdsStringsSet.has(item.id+'')
-        const matchesIdNumber = collidingIdsNumbersSet.has(+item.id)
+        const matchesIdString = collidingIdsStringsSet.has(item.id + "");
+        const matchesIdNumber = collidingIdsNumbersSet.has(+item.id);
         return !(matchesIdNumber || matchesIdString);
       }
       const csvItemsNotColliding = csvItems.filter(idNotInNumbersOrStrings);
@@ -153,10 +168,10 @@ export const MainCsvImport = (props: any) => {
       logging,
       disableCreateMany,
       dataProvider,
-      resourceName,
+      resourceName!,
       vals,
       preCommitCallback,
-      postCommitCallback
+      postCommitCallback,
     );
   }
 
@@ -165,10 +180,10 @@ export const MainCsvImport = (props: any) => {
       logging,
       disableUpdateMany,
       dataProvider,
-      resourceName,
+      resourceName!,
       vals,
       preCommitCallback,
-      postCommitCallback
+      postCommitCallback,
     );
   }
 
@@ -187,7 +202,10 @@ export const MainCsvImport = (props: any) => {
   const handleClose = () => {
     logger.log("handleClose", { file });
     resetVars();
-    notify(translate("csv.dialogImport.alertClose", { fname: fileName }), { type: 'info'});
+    notify(
+      translate("csv.dialogImport.alertClose", { fname: fileName }),
+      { type: "info" },
+    );
     refresh();
   };
 
@@ -196,9 +214,9 @@ export const MainCsvImport = (props: any) => {
     try {
       setIsLoading(true);
       await new Promise((res) => setTimeout(res, 1000));
-      const collidingIdsSet = new Set(idsConflicting.map((id) => id));
+      const collidingIdsSet = new Set(idsConflicting.map((id: any) => id));
       const valuesColliding = values.filter((item) =>
-        collidingIdsSet.has(item.id)
+        collidingIdsSet.has(item.id),
       );
       await updateRows(valuesColliding);
       handleClose();
@@ -221,10 +239,12 @@ export const MainCsvImport = (props: any) => {
   };
 
   const nextConflicting = () => {
-    const currentId = Array.isArray(idsConflicting) && idsConflicting.pop();
+    const currentId =
+      Array.isArray(idsConflicting) && idsConflicting.pop();
     setIdsConflicting(idsConflicting);
     const foundValue =
-      Array.isArray(values) && values.filter((v) => v.id === currentId).pop();
+      Array.isArray(values) &&
+      values.filter((v) => v.id === currentId).pop();
     logger.log("nextConflicting", { foundValue, currentId });
     const isLast = !foundValue;
     if (!isLast) {
@@ -244,7 +264,7 @@ export const MainCsvImport = (props: any) => {
 
   const handleAskDecideAddAsNew = async () => {
     logger.log("handleAskDecideAddAsNew");
-    const localCopy = Object.assign({},currentValue)
+    const localCopy = Object.assign({}, currentValue);
     delete localCopy.id;
     await createRows([localCopy]);
     const val = nextConflicting();
@@ -268,16 +288,13 @@ export const MainCsvImport = (props: any) => {
 
   return (
     <>
-      {/* IMPORT BUTTON */}
-      <ImportButton
-        variant={variant}
+      <ImportButtonUI
         label={label}
         clickImportButton={clickImportButton}
         onFileAdded={onFileAdded}
         onRef={(ref) => (refInput = ref)}
       />
 
-      {/* IMPORT DIALOG */}
       <ImportCsvDialogStrategy
         disableImportOverwrite={disableOverwrite}
         resourceName={resourceName}
@@ -291,7 +308,7 @@ export const MainCsvImport = (props: any) => {
         isLoading={isLoading}
         idsConflicting={idsConflicting}
       />
-      {/* IMPORT ASK DECIDE */}
+
       <ImportCsvDialogEachItem
         disableImportNew={disableNew}
         disableImportOverwrite={disableOverwrite}

@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { SharedDialogWrapper } from "./SharedDialogWrapper";
 import { SharedLoader } from "./SharedLoader";
-import { translateWrapper } from "../translateWrapper";
-import { List } from "@mui/material";
-import { Done, Undo, FileCopy } from "@mui/icons-material";
 import { SharedDialogButton } from "./SharedDialogButton";
+import { translateWrapper } from "../translateWrapper";
+import { Check, Copy, Undo2 } from "lucide-react";
 
 interface ImportCsvDialogStrategyProps {
   disableImportOverwrite: boolean;
@@ -30,7 +29,9 @@ interface MessageState {
   messageHtml: string;
 }
 
-export const ImportCsvDialogStrategy = (props: ImportCsvDialogStrategyProps) => {
+export const ImportCsvDialogStrategy = (
+  props: ImportCsvDialogStrategyProps,
+) => {
   const {
     count,
     disableImportOverwrite,
@@ -59,7 +60,9 @@ export const ImportCsvDialogStrategy = (props: ImportCsvDialogStrategyProps) => 
       }),
       loadingTxt: translate("csv.loading"),
       labelSkip: translate("csv.dialogImport.buttons.skipAllConflicts"),
-      labelReplace: translate("csv.dialogImport.buttons.replaceAllConflicts"),
+      labelReplace: translate(
+        "csv.dialogImport.buttons.replaceAllConflicts",
+      ),
       labelDecide: translate("csv.dialogImport.buttons.letmeDecide"),
       messageHtml: translate("csv.dialogCommon.conflictCount", {
         resource: resourceName,
@@ -75,33 +78,33 @@ export const ImportCsvDialogStrategy = (props: ImportCsvDialogStrategyProps) => 
       open={open}
       handleClose={handleClose}
     >
-      {isLoading && <SharedLoader loadingTxt={messages.loadingTxt}></SharedLoader>}
+      {isLoading && <SharedLoader loadingTxt={messages.loadingTxt} />}
       {idsConflicting && idsConflicting.length > 0 && !isLoading && (
-        <div>
+        <div className="space-y-3">
           <p
-            style={{ fontFamily: "sans-serif", margin: "0" }}
+            className="text-sm text-muted-foreground"
             dangerouslySetInnerHTML={{
               __html: messages.messageHtml,
             }}
-          ></p>
-          <List>
+          />
+          <div className="flex flex-col gap-2">
             <SharedDialogButton
               disabled={disableImportOverwrite}
               onClick={handleReplace}
-              icon={<Done htmlColor="#29c130" />}
+              icon={<Check className="size-4 text-green-500" />}
               label={messages.labelReplace}
             />
             <SharedDialogButton
               onClick={handleSkip}
-              icon={<FileCopy htmlColor="#3a88ca" />}
+              icon={<Copy className="size-4 text-blue-500" />}
               label={messages.labelSkip}
             />
             <SharedDialogButton
               onClick={handleAskDecide}
-              icon={<Undo htmlColor="black" />}
+              icon={<Undo2 className="size-4" />}
               label={messages.labelDecide}
             />
-          </List>
+          </div>
         </div>
       )}
     </SharedDialogWrapper>

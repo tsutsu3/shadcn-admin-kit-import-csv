@@ -1,12 +1,24 @@
 import { parse as convertFromCSV, ParseConfig } from "papaparse";
-import lensPath from "ramda/src/lensPath.js";
-import over from "ramda/src/over.js";
 
 type PapaString = string | null | number;
 
+function setNestedValue(obj: any, path: string, value: any): any {
+  const keys = path.split(".");
+  const result = { ...obj };
+  let current: any = result;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    current[key] = current[key] != null ? { ...current[key] } : {};
+    current = current[key];
+  }
+  current[keys[keys.length - 1]] = value;
+  return result;
+}
+
 const setObjectValue = (object: any, path: PapaString, value: any): any => {
-  const lensPathFunction = lensPath((!!path ? path+'' : '').split("."));
-  return over(lensPathFunction, () => value, object || {});
+  const pathStr = path != null ? path + "" : "";
+  if (!pathStr) return object || {};
+  return setNestedValue(object || {}, pathStr, value);
 };
 
 export async function processCsvFile(

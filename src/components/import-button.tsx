@@ -1,41 +1,41 @@
 import React from "react";
-import { Button as RAButton } from "react-admin";
-
-import { Tooltip } from "@mui/material";
-import GetAppIcon from "@mui/icons-material/GetApp";
+import { Upload } from "lucide-react";
+import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../ui/tooltip";
 import { translateWrapper } from "../translateWrapper";
 
-interface ImportButtonProps {
-  variant: "text" | "outlined" | "contained";
+interface ImportButtonUIProps {
   label: string;
   clickImportButton: () => any;
   onFileAdded: (e: React.ChangeEvent<HTMLInputElement>) => any;
   onRef: (el: HTMLInputElement) => any;
 }
 
-export function ImportButton(props: ImportButtonProps) {
-  const { variant, label, clickImportButton, onFileAdded, onRef } = props;
+export function ImportButtonUI(props: ImportButtonUIProps) {
+  const { label, clickImportButton, onFileAdded, onRef } = props;
   const translate = translateWrapper();
   return (
-    <Tooltip title={translate("csv.buttonMain.tooltip")}>
-      <div>
-        <RAButton
-          color="primary"
-          component="span"
-          variant={variant}
-          label={label}
-          onClick={clickImportButton}
-        >
-          <GetAppIcon style={{ transform: "rotate(180deg)", fontSize: "20" }} />
-        </RAButton>
-        <input
-          ref={onRef}
-          type="file"
-          style={{ display: "none" }}
-          onChange={onFileAdded}
-          accept=".csv,.tsv"
-        />
-      </div>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button variant="outline" size="sm" onClick={clickImportButton}>
+          <Upload className="size-4" />
+          {label}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{translate("csv.buttonMain.tooltip")}</p>
+      </TooltipContent>
+      <input
+        ref={onRef}
+        type="file"
+        className="hidden"
+        onChange={onFileAdded}
+        accept=".csv,.tsv"
+      />
     </Tooltip>
   );
 }
