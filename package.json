@@ -1,6 +1,6 @@
 {
   "name": "shadcn-admin-kit-import-csv",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CSV/TSV import button for react-admin with shadcn/ui components. A fork of react-admin-import-csv with Material UI replaced by shadcn/ui + Tailwind CSS.",
   "type": "module",
   "main": "./dist/index.cjs",
