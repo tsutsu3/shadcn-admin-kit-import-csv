@@ -9,7 +9,7 @@ import {
   RecordField,
   CreateButton,
   ExportButton,
-} from "@/components";
+} from "@/components/admin";
 import { ImportButton } from "shadcn-admin-kit-import-csv";
 
 const validateRow = async (row: any) => {
