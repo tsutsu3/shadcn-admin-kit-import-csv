@@ -2,7 +2,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/shadcn-admin-kit-import-csv.svg)](https://www.npmjs.com/package/shadcn-admin-kit-import-csv)
 
-CSV/TSV import button for [react-admin](https://github.com/marmelab/react-admin) using **shadcn/ui** + **Tailwind CSS**.
+CSV/TSV import button for [ra-core](https://marmelab.com/ra-core/) based admin frameworks (e.g. [shadcn-admin-kit](https://marmelab.com/shadcn-admin-kit/)) using **shadcn/ui** + **Tailwind CSS**.
 
 A fork of [react-admin-import-csv](https://github.com/benwinding/react-admin-import-csv) with Material UI replaced by [shadcn/ui](https://ui.shadcn.com/) components (Radix UI + Tailwind CSS).
 
@@ -12,7 +12,7 @@ A fork of [react-admin-import-csv](https://github.com/benwinding/react-admin-imp
 
 ## Features
 
-- Import CSV/TSV files into any react-admin resource
+- Import CSV/TSV files into any ra-core resource
 - Collision detection — skip, replace, or decide per row
 - Row validation with error toast notifications
 - Bulk operations via `createMany` / `updateManyArray` with automatic fallback
@@ -40,24 +40,28 @@ npm install react react-dom ra-core papaparse lucide-react \
 
 ### Basic
 
+> For a working example, see [`demo/src/posts.tsx`](demo/src/posts.tsx).
+
 ```tsx
-import { List, Datagrid, TextField, TopToolbar, CreateButton, ExportButton } from "react-admin";
+// List, DataTable, CreateButton, ExportButton are from your admin kit
+// (e.g. shadcn-admin-kit — see https://marmelab.com/shadcn-admin-kit/)
+import { List, DataTable, CreateButton, ExportButton } from "@/components/admin";
 import { ImportButton } from "shadcn-admin-kit-import-csv";
 
 const ListActions = () => (
-  <TopToolbar>
+  <div className="flex items-center gap-2">
     <CreateButton />
     <ExportButton />
     <ImportButton />
-  </TopToolbar>
+  </div>
 );
 
 export const PostList = () => (
   <List actions={<ListActions />}>
-    <Datagrid>
-      <TextField source="id" />
-      <TextField source="title" />
-    </Datagrid>
+    <DataTable>
+      <DataTable.Col source="id" />
+      <DataTable.Col source="title" />
+    </DataTable>
   </List>
 );
 ```
@@ -188,7 +192,7 @@ interface UpdateManyArrayParams {
 
 ## i18n
 
-Built-in translations with automatic English fallback. To integrate with react-admin's i18n system:
+Built-in translations with automatic English fallback. To integrate with ra-core's i18n system:
 
 ```tsx
 import { i18n } from "shadcn-admin-kit-import-csv";
