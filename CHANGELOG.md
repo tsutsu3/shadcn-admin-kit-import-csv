@@ -1,6 +1,17 @@
 # Changelog
 
-## [0.2.0](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/compare/v0.1.0..0.2.0) - 2026-02-23
+## [0.2.1](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/compare/v0.2.0..0.2.1) - 2026-03-31
+
+### 📚 Documentation
+
+- Add release guide and link from README - ([bbe5e2f](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/commit/bbe5e2f4883b8318a2f5d5f0b9f2892f9401f478))
+- Fix incorrect react-admin references and update Basic Usage example - ([823aec7](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/commit/823aec75514b940a0b8902ab0018cccd18341543))
+
+### ⚙️ Miscellaneous Tasks
+
+- Update GitHub Actions to use checkout and setup-node v6 ([#10](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/issues/10)) - ([cad3a8b](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/commit/cad3a8bd04e12fed38b9af1f6e2fa444675b1bf9))
+
+## [0.2.0](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/compare/v0.1.0..v0.2.0) - 2026-02-23
 
 ### ⚙️ Miscellaneous Tasks
 
