@@ -1,4 +1,6 @@
 name: Publish to npm
+permissions:
+  contents: read
 
 on:
   push:
@@ -57,7 +59,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
@@ -71,4 +73,4 @@ jobs:
 
       - name: Publish
         if: github.event_name != 'workflow_dispatch' || inputs.dry-run == false
-        run: npm publish --access public --provenance
+        run: npm publish --no-git-checks
