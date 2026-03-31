@@ -233,6 +233,10 @@ pnpm install
 pnpm dev
 ```
 
+### Release
+
+See [docs/RELEASE.md](docs/RELEASE.md) for the full release process (branch → PR → GitHub Release → npm publish).
+
 ## Credits
 
 This project is a fork of [react-admin-import-csv](https://github.com/benwinding/react-admin-import-csv) by [Ben Winding](https://github.com/benwinding), with Material UI components replaced by shadcn/ui.
