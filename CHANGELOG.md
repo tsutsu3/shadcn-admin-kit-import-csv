@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.2.1](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/compare/v0.2.0..0.2.1) - 2026-03-31
+## [0.2.2](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/compare/v0.2.1..0.2.2) - 2026-03-31
+
+### ⚙️ Miscellaneous Tasks
+
+- *(ci)* Enhance CI workflows with permissions and Node.js version update ([#14](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/issues/14)) - ([a854837](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/commit/a85483793c26dc2144ad97690f63dcdd42320c80))
+
+## [0.2.1](https://github.com/tsutsu3/shadcn-admin-kit-import-csv/compare/v0.2.0..v0.2.1) - 2026-03-31
 
 ### 📚 Documentation
 
